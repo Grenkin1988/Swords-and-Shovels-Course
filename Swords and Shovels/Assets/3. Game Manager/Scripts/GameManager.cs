@@ -3,19 +3,16 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class GameManager : MonoBehaviour {
-    // what level the game is currently in
-    // load and inload levels
+public class GameManager : Singleton<GameManager> {
     // keep track of the game state
     // ganerate other persistent systems
-
     private string _currentLevelName = string.Empty;
 
     private List<AsyncOperation> _loadOperations;
 
     private void Start() {
         DontDestroyOnLoad(gameObject);
-        
+
         _loadOperations = new List<AsyncOperation>();
         LoadLevel("Main");
     }
