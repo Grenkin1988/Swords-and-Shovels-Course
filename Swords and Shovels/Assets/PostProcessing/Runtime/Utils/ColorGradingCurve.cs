@@ -1,45 +1,43 @@
 using System;
 
-namespace UnityEngine.PostProcessing
-{
+namespace UnityEngine.PostProcessing {
     // Small wrapper on top of AnimationCurve to handle zero-key curves and keyframe looping
 
     [Serializable]
-    public sealed class ColorGradingCurve
-    {
+    public sealed class ColorGradingCurve {
         public AnimationCurve curve;
 
         [SerializeField]
-        bool m_Loop;
+        private bool m_Loop;
 
         [SerializeField]
-        float m_ZeroValue;
+        private float m_ZeroValue;
 
         [SerializeField]
-        float m_Range;
+        private float m_Range;
+        private AnimationCurve m_InternalLoopingCurve;
 
-        AnimationCurve m_InternalLoopingCurve;
-
-        public ColorGradingCurve(AnimationCurve curve, float zeroValue, bool loop, Vector2 bounds)
-        {
+        public ColorGradingCurve(AnimationCurve curve, float zeroValue, bool loop, Vector2 bounds) {
             this.curve = curve;
             m_ZeroValue = zeroValue;
             m_Loop = loop;
             m_Range = bounds.magnitude;
         }
 
-        public void Cache()
-        {
-            if (!m_Loop)
+        public void Cache() {
+            if (!m_Loop) {
                 return;
+            }
 
-            var length = curve.length;
+            int length = curve.length;
 
-            if (length < 2)
+            if (length < 2) {
                 return;
+            }
 
-            if (m_InternalLoopingCurve == null)
+            if (m_InternalLoopingCurve == null) {
                 m_InternalLoopingCurve = new AnimationCurve();
+            }
 
             var prev = curve[length - 1];
             prev.time -= m_Range;
@@ -50,13 +48,14 @@ namespace UnityEngine.PostProcessing
             m_InternalLoopingCurve.AddKey(next);
         }
 
-        public float Evaluate(float t)
-        {
-            if (curve.length == 0)
+        public float Evaluate(float t) {
+            if (curve.length == 0) {
                 return m_ZeroValue;
+            }
 
-            if (!m_Loop || curve.length == 1)
+            if (!m_Loop || curve.length == 1) {
                 return curve.Evaluate(t);
+            }
 
             return m_InternalLoopingCurve.Evaluate(t);
         }

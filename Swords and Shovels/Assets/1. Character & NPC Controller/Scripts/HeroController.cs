@@ -1,24 +1,20 @@
 using UnityEngine;
 using UnityEngine.AI;
 
-public class HeroController : MonoBehaviour
-{
-    Animator animator;
-    NavMeshAgent agent;
+public class HeroController : MonoBehaviour {
+    private Animator animator;
+    private NavMeshAgent agent;
 
-    void Awake()
-    {
+    private void Awake() {
         animator = GetComponent<Animator>();
         agent = GetComponent<NavMeshAgent>();
     }
 
-    void Update()
-    {
+    private void Update() {
         animator.SetFloat("Speed", agent.velocity.magnitude);
     }
 
-    public void SetDestination(Vector3 destination)
-    {
+    public void SetDestination(Vector3 destination) {
         agent.destination = destination;
     }
 }

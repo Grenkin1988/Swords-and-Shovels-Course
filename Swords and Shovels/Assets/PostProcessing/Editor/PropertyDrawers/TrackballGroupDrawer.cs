@@ -3,56 +3,50 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.PostProcessing;
 
-namespace UnityEditor.PostProcessing
-{
+namespace UnityEditor.PostProcessing {
     [CustomPropertyDrawer(typeof(TrackballGroupAttribute))]
-    sealed class TrackballGroupDrawer : PropertyDrawer
-    {
-        static Material s_Material;
-
-        const int k_MinWheelSize = 80;
-        const int k_MaxWheelSize = 256;
-
-        bool m_ResetState;
+    internal sealed class TrackballGroupDrawer : PropertyDrawer {
+        private static Material s_Material;
+        private const int k_MinWheelSize = 80;
+        private const int k_MaxWheelSize = 256;
+        private bool m_ResetState;
 
         // Cached trackball computation methods (for speed reasons)
-        static Dictionary<string, MethodInfo> m_TrackballMethods = new Dictionary<string, MethodInfo>();
+        private static Dictionary<string, MethodInfo> m_TrackballMethods = new Dictionary<string, MethodInfo>();
 
-        internal static int m_Size
-        {
-            get
-            {
+        internal static int m_Size {
+            get {
                 int size = Mathf.FloorToInt(EditorGUIUtility.currentViewWidth / 3f) - 18;
                 size = Mathf.Clamp(size, k_MinWheelSize, k_MaxWheelSize);
                 return size;
             }
         }
 
-        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
-        {
-            if (s_Material == null)
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label) {
+            if (s_Material == null) {
                 s_Material = new Material(Shader.Find("Hidden/Post FX/UI/Trackball")) { hideFlags = HideFlags.HideAndDontSave };
+            }
 
             position = new Rect(position.x, position.y, position.width / 3f, position.height);
             int size = m_Size;
             position.x += 5f;
 
             var enumerator = property.GetEnumerator();
-            while (enumerator.MoveNext())
-            {
+            while (enumerator.MoveNext()) {
                 var prop = enumerator.Current as SerializedProperty;
-                if (prop == null || prop.propertyType != SerializedPropertyType.Color)
+                if (prop == null || prop.propertyType != SerializedPropertyType.Color) {
                     continue;
+                }
 
                 OnWheelGUI(position, size, prop.Copy());
                 position.x += position.width;
             }
         }
 
-        void OnWheelGUI(Rect position, int size, SerializedProperty property)
-        {
-            if (Event.current.type == EventType.Layout)
+        private void OnWheelGUI(Rect position, int size, SerializedProperty property) {
+            if (Event.current.type == EventType.Layout) {
                 return;
+            }
 
             var value = property.colorValue;
             float offset = value.a;
@@ -60,8 +54,7 @@ namespace UnityEditor.PostProcessing
             var wheelDrawArea = position;
             wheelDrawArea.height = size;
 
-            if (wheelDrawArea.width > wheelDrawArea.height)
-            {
+            if (wheelDrawArea.width > wheelDrawArea.height) {
                 wheelDrawArea.x += (wheelDrawArea.width - wheelDrawArea.height) / 2.0f;
                 wheelDrawArea.width = position.height;
             }
@@ -73,8 +66,7 @@ namespace UnityEditor.PostProcessing
             Vector3 hsv;
             Color.RGBToHSV(value, out hsv.x, out hsv.y, out hsv.z);
 
-            if (Event.current.type == EventType.Repaint)
-            {
+            if (Event.current.type == EventType.Repaint) {
                 float scale = EditorGUIUtility.pixelsPerPoint;
 
                 // Wheel texture
@@ -122,14 +114,12 @@ namespace UnityEditor.PostProcessing
             // Advanced controls
             var data = Vector3.zero;
 
-            if (TryGetDisplayValue(value, property, out data))
-            {
+            if (TryGetDisplayValue(value, property, out data)) {
                 position.x = oldX;
                 position.y += position.height;
                 position.width = oldW / 3f;
 
-                using (new EditorGUI.DisabledGroupScope(true))
-                {
+                using (new EditorGUI.DisabledGroupScope(true)) {
                     GUI.Label(position, data.x.ToString("F2"), EditorStyles.centeredGreyMiniLabel);
                     position.x += position.width;
                     GUI.Label(position, data.y.ToString("F2"), EditorStyles.centeredGreyMiniLabel);
@@ -145,8 +135,7 @@ namespace UnityEditor.PostProcessing
             position.width = oldW;
             GUI.Label(position, property.displayName, EditorStyles.centeredGreyMiniLabel);
 
-            if (m_ResetState)
-            {
+            if (m_ResetState) {
                 value = Color.clear;
                 m_ResetState = false;
             }
@@ -154,17 +143,15 @@ namespace UnityEditor.PostProcessing
             property.colorValue = value;
         }
 
-        bool TryGetDisplayValue(Color color, SerializedProperty property, out Vector3 output)
-        {
+        private bool TryGetDisplayValue(Color color, SerializedProperty property, out Vector3 output) {
             output = Vector3.zero;
-            MethodInfo method;
 
-            if (!m_TrackballMethods.TryGetValue(property.name, out method))
-            {
+            if (!m_TrackballMethods.TryGetValue(property.name, out var method)) {
                 var field = ReflectionUtils.GetFieldInfoFromPath(property.serializedObject.targetObject, property.propertyPath);
 
-                if (!field.IsDefined(typeof(TrackballAttribute), false))
+                if (!field.IsDefined(typeof(TrackballAttribute), false)) {
                     return false;
+                }
 
                 var attr = (TrackballAttribute)field.GetCustomAttributes(typeof(TrackballAttribute), false)[0];
                 const BindingFlags flags = BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static;
@@ -172,53 +159,44 @@ namespace UnityEditor.PostProcessing
                 m_TrackballMethods.Add(property.name, method);
             }
 
-            if (method == null)
+            if (method == null) {
                 return false;
+            }
 
             output = (Vector3)method.Invoke(property.serializedObject.targetObject, new object[] { color });
             return true;
         }
 
-        static readonly int k_ThumbHash = "colorWheelThumb".GetHashCode();
+        private static readonly int k_ThumbHash = "colorWheelThumb".GetHashCode();
 
-        Vector3 GetInput(Rect bounds, Vector3 hsv, float radius)
-        {
+        private Vector3 GetInput(Rect bounds, Vector3 hsv, float radius) {
             var e = Event.current;
-            var id = GUIUtility.GetControlID(k_ThumbHash, FocusType.Passive, bounds);
+            int id = GUIUtility.GetControlID(k_ThumbHash, FocusType.Passive, bounds);
 
             var mousePos = e.mousePosition;
             var relativePos = mousePos - new Vector2(bounds.x, bounds.y);
 
-            if (e.type == EventType.MouseDown && GUIUtility.hotControl == 0 && bounds.Contains(mousePos))
-            {
-                if (e.button == 0)
-                {
+            if (e.type == EventType.MouseDown && GUIUtility.hotControl == 0 && bounds.Contains(mousePos)) {
+                if (e.button == 0) {
                     var center = new Vector2(bounds.x + radius, bounds.y + radius);
                     float dist = Vector2.Distance(center, mousePos);
 
-                    if (dist <= radius)
-                    {
+                    if (dist <= radius) {
                         e.Use();
                         GetWheelHueSaturation(relativePos.x, relativePos.y, radius, out hsv.x, out hsv.y);
                         GUIUtility.hotControl = id;
                         GUI.changed = true;
                     }
-                }
-                else if (e.button == 1)
-                {
+                } else if (e.button == 1) {
                     e.Use();
                     GUI.changed = true;
                     m_ResetState = true;
                 }
-            }
-            else if (e.type == EventType.MouseDrag && e.button == 0 && GUIUtility.hotControl == id)
-            {
+            } else if (e.type == EventType.MouseDrag && e.button == 0 && GUIUtility.hotControl == id) {
                 e.Use();
                 GUI.changed = true;
                 GetWheelHueSaturation(relativePos.x, relativePos.y, radius, out hsv.x, out hsv.y);
-            }
-            else if (e.rawType == EventType.MouseUp && e.button == 0 && GUIUtility.hotControl == id)
-            {
+            } else if (e.rawType == EventType.MouseUp && e.button == 0 && GUIUtility.hotControl == id) {
                 e.Use();
                 GUIUtility.hotControl = 0;
             }
@@ -226,8 +204,7 @@ namespace UnityEditor.PostProcessing
             return hsv;
         }
 
-        void GetWheelHueSaturation(float x, float y, float radius, out float hue, out float saturation)
-        {
+        private void GetWheelHueSaturation(float x, float y, float radius, out float hue, out float saturation) {
             float dx = (x - radius) / radius;
             float dy = (y - radius) / radius;
             float d = Mathf.Sqrt(dx * dx + dy * dy);
@@ -236,8 +213,7 @@ namespace UnityEditor.PostProcessing
             saturation = Mathf.Clamp01(d);
         }
 
-        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-        {
+        public override float GetPropertyHeight(SerializedProperty property, GUIContent label) {
             return m_Size + 4f * 2f + EditorGUIUtility.singleLineHeight * 3f;
         }
     }

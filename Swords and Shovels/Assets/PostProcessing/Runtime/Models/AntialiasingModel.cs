@@ -1,12 +1,9 @@
 using System;
 
-namespace UnityEngine.PostProcessing
-{
+namespace UnityEngine.PostProcessing {
     [Serializable]
-    public class AntialiasingModel : PostProcessingModel
-    {
-        public enum Method
-        {
+    public class AntialiasingModel : PostProcessingModel {
+        public enum Method {
             Fxaa,
             Taa
         }
@@ -15,8 +12,7 @@ namespace UnityEngine.PostProcessing
         // the tooltip attributes in case an user wants to customize each preset.
 
         #region FXAA Settings
-        public enum FxaaPreset
-        {
+        public enum FxaaPreset {
             ExtremePerformance,
             Performance,
             Default,
@@ -25,8 +21,7 @@ namespace UnityEngine.PostProcessing
         }
 
         [Serializable]
-        public struct FxaaQualitySettings
-        {
+        public struct FxaaQualitySettings {
             [Tooltip("The amount of desired sub-pixel aliasing removal. Effects the sharpeness of the output.")]
             [Range(0f, 1f)]
             public float subpixelAliasingRemovalAmount;
@@ -84,8 +79,7 @@ namespace UnityEngine.PostProcessing
         }
 
         [Serializable]
-        public struct FxaaConsoleSettings
-        {
+        public struct FxaaConsoleSettings {
             [Tooltip("The amount of spread applied to the sampling coordinates while sampling for subpixel information.")]
             [Range(0.33f, 0.5f)]
             public float subpixelSpreadAmount;
@@ -152,16 +146,12 @@ namespace UnityEngine.PostProcessing
         }
 
         [Serializable]
-        public struct FxaaSettings
-        {
+        public struct FxaaSettings {
             public FxaaPreset preset;
 
-            public static FxaaSettings defaultSettings
-            {
-                get
-                {
-                    return new FxaaSettings
-                    {
+            public static FxaaSettings defaultSettings {
+                get {
+                    return new FxaaSettings {
                         preset = FxaaPreset.Default
                     };
                 }
@@ -171,8 +161,7 @@ namespace UnityEngine.PostProcessing
 
         #region TAA Settings
         [Serializable]
-        public struct TaaSettings
-        {
+        public struct TaaSettings {
             [Tooltip("The diameter (in texels) inside which jitter samples are spread. Smaller values result in crisper but more aliased output, while larger values result in more stable but blurrier output.")]
             [Range(0.1f, 1f)]
             public float jitterSpread;
@@ -189,12 +178,9 @@ namespace UnityEngine.PostProcessing
             [Range(0f, 0.99f)]
             public float motionBlending;
 
-            public static TaaSettings defaultSettings
-            {
-                get
-                {
-                    return new TaaSettings
-                    {
+            public static TaaSettings defaultSettings {
+                get {
+                    return new TaaSettings {
                         jitterSpread = 0.75f,
                         sharpen = 0.3f,
                         stationaryBlending = 0.95f,
@@ -206,18 +192,14 @@ namespace UnityEngine.PostProcessing
         #endregion
 
         [Serializable]
-        public struct Settings
-        {
+        public struct Settings {
             public Method method;
             public FxaaSettings fxaaSettings;
             public TaaSettings taaSettings;
 
-            public static Settings defaultSettings
-            {
-                get
-                {
-                    return new Settings
-                    {
+            public static Settings defaultSettings {
+                get {
+                    return new Settings {
                         method = Method.Fxaa,
                         fxaaSettings = FxaaSettings.defaultSettings,
                         taaSettings = TaaSettings.defaultSettings
@@ -227,15 +209,13 @@ namespace UnityEngine.PostProcessing
         }
 
         [SerializeField]
-        Settings m_Settings = Settings.defaultSettings;
-        public Settings settings
-        {
+        private Settings m_Settings = Settings.defaultSettings;
+        public Settings settings {
             get { return m_Settings; }
             set { m_Settings = value; }
         }
 
-        public override void Reset()
-        {
+        public override void Reset() {
             m_Settings = Settings.defaultSettings;
         }
     }

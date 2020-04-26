@@ -2,48 +2,41 @@ using UnityEditorInternal;
 using UnityEngine;
 using UnityEngine.PostProcessing;
 
-namespace UnityEditor.PostProcessing
-{
-    public class WaveformMonitor : PostProcessingMonitor
-    {
-        static GUIContent s_MonitorTitle = new GUIContent("Waveform");
+namespace UnityEditor.PostProcessing {
+    public class WaveformMonitor : PostProcessingMonitor {
+        private static GUIContent s_MonitorTitle = new GUIContent("Waveform");
+        private ComputeShader m_ComputeShader;
+        private ComputeBuffer m_Buffer;
+        private Material m_Material;
+        private RenderTexture m_WaveformTexture;
+        private Rect m_MonitorAreaRect;
 
-        ComputeShader m_ComputeShader;
-        ComputeBuffer m_Buffer;
-        Material m_Material;
-        RenderTexture m_WaveformTexture;
-        Rect m_MonitorAreaRect;
-
-        public WaveformMonitor()
-        {
+        public WaveformMonitor() {
             m_ComputeShader = EditorResources.Load<ComputeShader>("Monitors/WaveformCompute.compute");
         }
 
-        public override void Dispose()
-        {
+        public override void Dispose() {
             GraphicsUtils.Destroy(m_Material);
             GraphicsUtils.Destroy(m_WaveformTexture);
 
-            if (m_Buffer != null)
+            if (m_Buffer != null) {
                 m_Buffer.Release();
+            }
 
             m_Material = null;
             m_WaveformTexture = null;
             m_Buffer = null;
         }
 
-        public override bool IsSupported()
-        {
+        public override bool IsSupported() {
             return m_ComputeShader != null && GraphicsUtils.supportsDX11;
         }
 
-        public override GUIContent GetMonitorTitle()
-        {
+        public override GUIContent GetMonitorTitle() {
             return s_MonitorTitle;
         }
 
-        public override void OnMonitorSettings()
-        {
+        public override void OnMonitorSettings() {
             EditorGUI.BeginChangeCheck();
 
             bool refreshOnPlay = m_MonitorSettings.refreshOnPlay;
@@ -59,8 +52,7 @@ namespace UnityEditor.PostProcessing
 
             Y = GUILayout.Toggle(Y, new GUIContent("Y", "Show the luminance waveform only."), FxStyles.preButton);
 
-            if (Y)
-            {
+            if (Y) {
                 R = false;
                 G = false;
                 B = false;
@@ -70,18 +62,17 @@ namespace UnityEditor.PostProcessing
             G = GUILayout.Toggle(G, new GUIContent("G", "Show the green waveform."), FxStyles.preButton);
             B = GUILayout.Toggle(B, new GUIContent("B", "Show the blue waveform."), FxStyles.preButton);
 
-            if (R || G || B)
+            if (R || G || B) {
                 Y = false;
+            }
 
-            if (!Y && !R && !G && !B)
-            {
+            if (!Y && !R && !G && !B) {
                 R = true;
                 G = true;
                 B = true;
             }
 
-            if (EditorGUI.EndChangeCheck())
-            {
+            if (EditorGUI.EndChangeCheck()) {
                 Undo.RecordObject(m_BaseEditor.serializedObject.targetObject, "Waveforme Settings Changed");
                 m_MonitorSettings.refreshOnPlay = refreshOnPlay;
                 m_MonitorSettings.waveformExposure = exposure;
@@ -93,13 +84,12 @@ namespace UnityEditor.PostProcessing
             }
         }
 
-        public override void OnMonitorGUI(Rect r)
-        {
-            if (Event.current.type == EventType.Repaint)
-            {
+        public override void OnMonitorGUI(Rect r) {
+            if (Event.current.type == EventType.Repaint) {
                 // If m_MonitorAreaRect isn't set the preview was just opened so refresh the render to get the waveform data
-                if (Mathf.Approximately(m_MonitorAreaRect.width, 0) && Mathf.Approximately(m_MonitorAreaRect.height, 0))
+                if (Mathf.Approximately(m_MonitorAreaRect.width, 0) && Mathf.Approximately(m_MonitorAreaRect.height, 0)) {
                     InternalEditorUtility.RepaintAllViews();
+                }
 
                 // Sizing
                 float width = m_WaveformTexture != null
@@ -115,8 +105,7 @@ namespace UnityEditor.PostProcessing
                         width, height
                         );
 
-                if (m_WaveformTexture != null)
-                {
+                if (m_WaveformTexture != null) {
                     m_Material.SetFloat("_Exposure", m_MonitorSettings.waveformExposure);
 
                     var oldActive = RenderTexture.active;
@@ -205,15 +194,16 @@ namespace UnityEditor.PostProcessing
             }
         }
 
-        public override void OnFrameData(RenderTexture source)
-        {
-            if (Application.isPlaying && !m_MonitorSettings.refreshOnPlay)
+        public override void OnFrameData(RenderTexture source) {
+            if (Application.isPlaying && !m_MonitorSettings.refreshOnPlay) {
                 return;
+            }
 
-            if (Mathf.Approximately(m_MonitorAreaRect.width, 0) || Mathf.Approximately(m_MonitorAreaRect.height, 0))
+            if (Mathf.Approximately(m_MonitorAreaRect.width, 0) || Mathf.Approximately(m_MonitorAreaRect.height, 0)) {
                 return;
+            }
 
-            float ratio = (float)source.width / (float)source.height;
+            float ratio = source.width / (float)source.height;
             int h = 384;
             int w = Mathf.FloorToInt(h * ratio);
 
@@ -224,19 +214,14 @@ namespace UnityEditor.PostProcessing
             RenderTexture.ReleaseTemporary(rt);
         }
 
-        void CreateBuffer(int width, int height)
-        {
+        private void CreateBuffer(int width, int height) {
             m_Buffer = new ComputeBuffer(width * height, sizeof(uint) << 2);
         }
 
-        void ComputeWaveform(RenderTexture source)
-        {
-            if (m_Buffer == null)
-            {
+        private void ComputeWaveform(RenderTexture source) {
+            if (m_Buffer == null) {
                 CreateBuffer(source.width, source.height);
-            }
-            else if (m_Buffer.count != (source.width * source.height))
-            {
+            } else if (m_Buffer.count != (source.width * source.height)) {
                 m_Buffer.Release();
                 CreateBuffer(source.width, source.height);
             }
@@ -258,19 +243,18 @@ namespace UnityEditor.PostProcessing
             cs.SetVector("_Channels", channels);
             cs.Dispatch(kernel, source.width, 1, 1);
 
-            if (m_WaveformTexture == null || m_WaveformTexture.width != source.width || m_WaveformTexture.height != source.height)
-            {
+            if (m_WaveformTexture == null || m_WaveformTexture.width != source.width || m_WaveformTexture.height != source.height) {
                 GraphicsUtils.Destroy(m_WaveformTexture);
-                m_WaveformTexture = new RenderTexture(source.width, source.height, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear)
-                {
+                m_WaveformTexture = new RenderTexture(source.width, source.height, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.Linear) {
                     hideFlags = HideFlags.DontSave,
                     wrapMode = TextureWrapMode.Clamp,
                     filterMode = FilterMode.Bilinear
                 };
             }
 
-            if (m_Material == null)
+            if (m_Material == null) {
                 m_Material = new Material(Shader.Find("Hidden/Post FX/Monitors/Waveform Render")) { hideFlags = HideFlags.DontSave };
+            }
 
             m_Material.SetBuffer("_Waveform", m_Buffer);
             m_Material.SetVector("_Size", new Vector2(m_WaveformTexture.width, m_WaveformTexture.height));

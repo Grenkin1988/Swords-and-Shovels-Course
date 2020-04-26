@@ -1,26 +1,23 @@
 using UnityEngine;
 using UnityEngine.PostProcessing;
 
-namespace UnityEditor.PostProcessing
-{
-    using VignetteMode = VignetteModel.Mode;
+namespace UnityEditor.PostProcessing {
     using Settings = VignetteModel.Settings;
+    using VignetteMode = VignetteModel.Mode;
 
     [PostProcessingModelEditor(typeof(VignetteModel))]
-    public class VignetteModelEditor : PostProcessingModelEditor
-    {
-        SerializedProperty m_Mode;
-        SerializedProperty m_Color;
-        SerializedProperty m_Center;
-        SerializedProperty m_Intensity;
-        SerializedProperty m_Smoothness;
-        SerializedProperty m_Roundness;
-        SerializedProperty m_Mask;
-        SerializedProperty m_Opacity;
-        SerializedProperty m_Rounded;
+    public class VignetteModelEditor : PostProcessingModelEditor {
+        private SerializedProperty m_Mode;
+        private SerializedProperty m_Color;
+        private SerializedProperty m_Center;
+        private SerializedProperty m_Intensity;
+        private SerializedProperty m_Smoothness;
+        private SerializedProperty m_Roundness;
+        private SerializedProperty m_Mask;
+        private SerializedProperty m_Opacity;
+        private SerializedProperty m_Rounded;
 
-        public override void OnEnable()
-        {
+        public override void OnEnable() {
             m_Mode = FindSetting((Settings x) => x.mode);
             m_Color = FindSetting((Settings x) => x.color);
             m_Center = FindSetting((Settings x) => x.center);
@@ -32,26 +29,21 @@ namespace UnityEditor.PostProcessing
             m_Rounded = FindSetting((Settings x) => x.rounded);
         }
 
-        public override void OnInspectorGUI()
-        {
+        public override void OnInspectorGUI() {
             EditorGUILayout.PropertyField(m_Mode);
             EditorGUILayout.PropertyField(m_Color);
 
-            if (m_Mode.intValue < (int)VignetteMode.Masked)
-            {
+            if (m_Mode.intValue < (int)VignetteMode.Masked) {
                 EditorGUILayout.PropertyField(m_Center);
                 EditorGUILayout.PropertyField(m_Intensity);
                 EditorGUILayout.PropertyField(m_Smoothness);
                 EditorGUILayout.PropertyField(m_Roundness);
                 EditorGUILayout.PropertyField(m_Rounded);
-            }
-            else
-            {
+            } else {
                 var mask = (target as VignetteModel).settings.mask;
 
                 // Checks import settings on the mask, offers to fix them if invalid
-                if (mask != null)
-                {
+                if (mask != null) {
                     var importer = AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(mask)) as TextureImporter;
 
                     if (importer != null) // Fails when using an internal texture
@@ -71,16 +63,13 @@ namespace UnityEditor.PostProcessing
                             && importer.wrapMode == TextureWrapMode.Clamp;
 #endif
 
-                        if (!valid)
-                        {
+                        if (!valid) {
                             EditorGUILayout.HelpBox("Invalid mask import settings.", MessageType.Warning);
 
                             GUILayout.Space(-32);
-                            using (new EditorGUILayout.HorizontalScope())
-                            {
+                            using (new EditorGUILayout.HorizontalScope()) {
                                 GUILayout.FlexibleSpace();
-                                if (GUILayout.Button("Fix", GUILayout.Width(60)))
-                                {
+                                if (GUILayout.Button("Fix", GUILayout.Width(60))) {
                                     SetMaskImportSettings(importer);
                                     AssetDatabase.Refresh();
                                 }
@@ -96,8 +85,7 @@ namespace UnityEditor.PostProcessing
             }
         }
 
-        void SetMaskImportSettings(TextureImporter importer)
-        {
+        private void SetMaskImportSettings(TextureImporter importer) {
 #if UNITY_5_5_OR_NEWER
             importer.textureType = TextureImporterType.SingleChannel;
             //importer.alphaUsage = TextureImporterAlphaUsage.FromGrayScale;

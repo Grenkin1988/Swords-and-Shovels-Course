@@ -1,22 +1,16 @@
 using System;
 
-namespace UnityEngine.PostProcessing
-{
+namespace UnityEngine.PostProcessing {
     [Serializable]
-    public class BuiltinDebugViewsModel : PostProcessingModel
-    {
+    public class BuiltinDebugViewsModel : PostProcessingModel {
         [Serializable]
-        public struct DepthSettings
-        {
+        public struct DepthSettings {
             [Range(0f, 1f), Tooltip("Scales the camera far plane before displaying the depth map.")]
             public float scale;
 
-            public static DepthSettings defaultSettings
-            {
-                get
-                {
-                    return new DepthSettings
-                    {
+            public static DepthSettings defaultSettings {
+                get {
+                    return new DepthSettings {
                         scale = 1f
                     };
                 }
@@ -24,8 +18,7 @@ namespace UnityEngine.PostProcessing
         }
 
         [Serializable]
-        public struct MotionVectorsSettings
-        {
+        public struct MotionVectorsSettings {
             [Range(0f, 1f), Tooltip("Opacity of the source render.")]
             public float sourceOpacity;
 
@@ -44,12 +37,9 @@ namespace UnityEngine.PostProcessing
             [Min(0f), Tooltip("Tweaks the arrows length.")]
             public float motionVectorsAmplitude;
 
-            public static MotionVectorsSettings defaultSettings
-            {
-                get
-                {
-                    return new MotionVectorsSettings
-                    {
+            public static MotionVectorsSettings defaultSettings {
+                get {
+                    return new MotionVectorsSettings {
                         sourceOpacity = 1f,
 
                         motionImageOpacity = 0f,
@@ -63,8 +53,7 @@ namespace UnityEngine.PostProcessing
             }
         }
 
-        public enum Mode
-        {
+        public enum Mode {
             None,
 
             Depth,
@@ -80,18 +69,14 @@ namespace UnityEngine.PostProcessing
         }
 
         [Serializable]
-        public struct Settings
-        {
+        public struct Settings {
             public Mode mode;
             public DepthSettings depth;
             public MotionVectorsSettings motionVectors;
 
-            public static Settings defaultSettings
-            {
-                get
-                {
-                    return new Settings
-                    {
+            public static Settings defaultSettings {
+                get {
+                    return new Settings {
                         mode = Mode.None,
                         depth = DepthSettings.defaultSettings,
                         motionVectors = MotionVectorsSettings.defaultSettings
@@ -101,17 +86,14 @@ namespace UnityEngine.PostProcessing
         }
 
         [SerializeField]
-        Settings m_Settings = Settings.defaultSettings;
-        public Settings settings
-        {
+        private Settings m_Settings = Settings.defaultSettings;
+        public Settings settings {
             get { return m_Settings; }
             set { m_Settings = value; }
         }
 
-        public bool willInterrupt
-        {
-            get
-            {
+        public bool willInterrupt {
+            get {
                 return !IsModeActive(Mode.None)
                        && !IsModeActive(Mode.EyeAdaptation)
                        && !IsModeActive(Mode.PreGradingLog)
@@ -120,13 +102,11 @@ namespace UnityEngine.PostProcessing
             }
         }
 
-        public override void Reset()
-        {
+        public override void Reset() {
             settings = Settings.defaultSettings;
         }
 
-        public bool IsModeActive(Mode mode)
-        {
+        public bool IsModeActive(Mode mode) {
             return m_Settings.mode == mode;
         }
     }

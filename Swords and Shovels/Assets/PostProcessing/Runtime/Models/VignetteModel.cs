@@ -1,19 +1,15 @@
 using System;
 
-namespace UnityEngine.PostProcessing
-{
+namespace UnityEngine.PostProcessing {
     [Serializable]
-    public class VignetteModel : PostProcessingModel
-    {
-        public enum Mode
-        {
+    public class VignetteModel : PostProcessingModel {
+        public enum Mode {
             Classic,
             Masked
         }
 
         [Serializable]
-        public struct Settings
-        {
+        public struct Settings {
             [Tooltip("Use the \"Classic\" mode for parametric controls. Use the \"Masked\" mode to use your own texture mask.")]
             public Mode mode;
 
@@ -42,12 +38,9 @@ namespace UnityEngine.PostProcessing
             [Tooltip("Should the vignette be perfectly round or be dependent on the current aspect ratio?")]
             public bool rounded;
 
-            public static Settings defaultSettings
-            {
-                get
-                {
-                    return new Settings
-                    {
+            public static Settings defaultSettings {
+                get {
+                    return new Settings {
                         mode = Mode.Classic,
                         color = new Color(0f, 0f, 0f, 1f),
                         center = new Vector2(0.5f, 0.5f),
@@ -63,15 +56,13 @@ namespace UnityEngine.PostProcessing
         }
 
         [SerializeField]
-        Settings m_Settings = Settings.defaultSettings;
-        public Settings settings
-        {
+        private Settings m_Settings = Settings.defaultSettings;
+        public Settings settings {
             get { return m_Settings; }
             set { m_Settings = value; }
         }
 
-        public override void Reset()
-        {
+        public override void Reset() {
             m_Settings = Settings.defaultSettings;
         }
     }

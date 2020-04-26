@@ -1,20 +1,16 @@
 using UnityEngine.PostProcessing;
 
-namespace UnityEditor.PostProcessing
-{
+namespace UnityEditor.PostProcessing {
     using Mode = BuiltinDebugViewsModel.Mode;
     using Settings = BuiltinDebugViewsModel.Settings;
 
     [PostProcessingModelEditor(typeof(BuiltinDebugViewsModel), alwaysEnabled: true)]
-    public class BuiltinDebugViewsEditor : PostProcessingModelEditor
-    {
-        struct DepthSettings
-        {
+    public class BuiltinDebugViewsEditor : PostProcessingModelEditor {
+        private struct DepthSettings {
             public SerializedProperty scale;
         }
 
-        struct MotionVectorsSettings
-        {
+        private struct MotionVectorsSettings {
             public SerializedProperty sourceOpacity;
             public SerializedProperty motionImageOpacity;
             public SerializedProperty motionImageAmplitude;
@@ -23,21 +19,18 @@ namespace UnityEditor.PostProcessing
             public SerializedProperty motionVectorsAmplitude;
         }
 
-        SerializedProperty m_Mode;
-        DepthSettings m_Depth;
-        MotionVectorsSettings m_MotionVectors;
+        private SerializedProperty m_Mode;
+        private DepthSettings m_Depth;
+        private MotionVectorsSettings m_MotionVectors;
 
-        public override void OnEnable()
-        {
+        public override void OnEnable() {
             m_Mode = FindSetting((Settings x) => x.mode);
 
-            m_Depth = new DepthSettings
-            {
+            m_Depth = new DepthSettings {
                 scale = FindSetting((Settings x) => x.depth.scale)
             };
 
-            m_MotionVectors = new MotionVectorsSettings
-            {
+            m_MotionVectors = new MotionVectorsSettings {
                 sourceOpacity = FindSetting((Settings x) => x.motionVectors.sourceOpacity),
                 motionImageOpacity = FindSetting((Settings x) => x.motionVectors.motionImageOpacity),
                 motionImageAmplitude = FindSetting((Settings x) => x.motionVectors.motionImageAmplitude),
@@ -47,18 +40,14 @@ namespace UnityEditor.PostProcessing
             };
         }
 
-        public override void OnInspectorGUI()
-        {
+        public override void OnInspectorGUI() {
             EditorGUILayout.PropertyField(m_Mode);
 
             int mode = m_Mode.intValue;
 
-            if (mode == (int)Mode.Depth)
-            {
+            if (mode == (int)Mode.Depth) {
                 EditorGUILayout.PropertyField(m_Depth.scale);
-            }
-            else if (mode == (int)Mode.MotionVectors)
-            {
+            } else if (mode == (int)Mode.MotionVectors) {
                 EditorGUILayout.HelpBox("Switch to play mode to see motion vectors.", MessageType.Info);
 
                 EditorGUILayout.LabelField("Source Image", EditorStyles.boldLabel);
@@ -71,8 +60,9 @@ namespace UnityEditor.PostProcessing
                 EditorGUILayout.LabelField("Motion Vectors (overlay)", EditorStyles.boldLabel);
                 EditorGUI.indentLevel++;
 
-                if (m_MotionVectors.motionImageOpacity.floatValue > 0f)
+                if (m_MotionVectors.motionImageOpacity.floatValue > 0f) {
                     EditorGUILayout.HelpBox("Please keep opacity to 0 if you're subject to motion sickness.", MessageType.Warning);
+                }
 
                 EditorGUILayout.PropertyField(m_MotionVectors.motionImageOpacity, EditorGUIHelper.GetContent("Opacity"));
                 EditorGUILayout.PropertyField(m_MotionVectors.motionImageAmplitude, EditorGUIHelper.GetContent("Amplitude"));
@@ -86,9 +76,7 @@ namespace UnityEditor.PostProcessing
                 EditorGUILayout.PropertyField(m_MotionVectors.motionVectorsResolution, EditorGUIHelper.GetContent("Resolution"));
                 EditorGUILayout.PropertyField(m_MotionVectors.motionVectorsAmplitude, EditorGUIHelper.GetContent("Amplitude"));
                 EditorGUI.indentLevel--;
-            }
-            else
-            {
+            } else {
                 CheckActiveEffect(mode == (int)Mode.AmbientOcclusion && !profile.ambientOcclusion.enabled, "Ambient Occlusion");
                 CheckActiveEffect(mode == (int)Mode.FocusPlane && !profile.depthOfField.enabled, "Depth Of Field");
                 CheckActiveEffect(mode == (int)Mode.EyeAdaptation && !profile.eyeAdaptation.enabled, "Eye Adaptation");
@@ -97,10 +85,10 @@ namespace UnityEditor.PostProcessing
             }
         }
 
-        void CheckActiveEffect(bool expr, string name)
-        {
-            if (expr)
+        private void CheckActiveEffect(bool expr, string name) {
+            if (expr) {
                 EditorGUILayout.HelpBox(string.Format("{0} isn't enabled, the debug view won't work.", name), MessageType.Warning);
+            }
         }
     }
 }

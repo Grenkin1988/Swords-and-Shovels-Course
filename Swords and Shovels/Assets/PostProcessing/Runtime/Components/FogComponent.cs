@@ -1,24 +1,19 @@
 using UnityEngine.Rendering;
 
-namespace UnityEngine.PostProcessing
-{
-    public sealed class FogComponent : PostProcessingComponentCommandBuffer<FogModel>
-    {
-        static class Uniforms
-        {
+namespace UnityEngine.PostProcessing {
+    public sealed class FogComponent : PostProcessingComponentCommandBuffer<FogModel> {
+        private static class Uniforms {
             internal static readonly int _FogColor = Shader.PropertyToID("_FogColor");
-            internal static readonly int _Density  = Shader.PropertyToID("_Density");
-            internal static readonly int _Start    = Shader.PropertyToID("_Start");
-            internal static readonly int _End      = Shader.PropertyToID("_End");
-            internal static readonly int _TempRT   = Shader.PropertyToID("_TempRT");
+            internal static readonly int _Density = Shader.PropertyToID("_Density");
+            internal static readonly int _Start = Shader.PropertyToID("_Start");
+            internal static readonly int _End = Shader.PropertyToID("_End");
+            internal static readonly int _TempRT = Shader.PropertyToID("_TempRT");
         }
 
-        const string k_ShaderString = "Hidden/Post FX/Fog";
+        private const string k_ShaderString = "Hidden/Post FX/Fog";
 
-        public override bool active
-        {
-            get
-            {
+        public override bool active {
+            get {
                 return model.enabled
                        && context.isGBufferAvailable // In forward fog is already done at shader level
                        && RenderSettings.fog
@@ -26,23 +21,19 @@ namespace UnityEngine.PostProcessing
             }
         }
 
-        public override string GetName()
-        {
+        public override string GetName() {
             return "Fog";
         }
 
-        public override DepthTextureMode GetCameraFlags()
-        {
+        public override DepthTextureMode GetCameraFlags() {
             return DepthTextureMode.Depth;
         }
 
-        public override CameraEvent GetCameraEvent()
-        {
+        public override CameraEvent GetCameraEvent() {
             return CameraEvent.AfterImageEffectsOpaque;
         }
 
-        public override void PopulateCommandBuffer(CommandBuffer cb)
-        {
+        public override void PopulateCommandBuffer(CommandBuffer cb) {
             var settings = model.settings;
 
             var material = context.materialFactory.Get(k_ShaderString);
@@ -53,8 +44,7 @@ namespace UnityEngine.PostProcessing
             material.SetFloat(Uniforms._Start, RenderSettings.fogStartDistance);
             material.SetFloat(Uniforms._End, RenderSettings.fogEndDistance);
 
-            switch (RenderSettings.fogMode)
-            {
+            switch (RenderSettings.fogMode) {
                 case FogMode.Linear:
                     material.EnableKeyword("FOG_LINEAR");
                     break;

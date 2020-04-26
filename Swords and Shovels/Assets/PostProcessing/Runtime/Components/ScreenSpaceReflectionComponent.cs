@@ -1,59 +1,55 @@
 using UnityEngine.Rendering;
 
-namespace UnityEngine.PostProcessing
-{
-    using SSRResolution = ScreenSpaceReflectionModel.SSRResolution;
+namespace UnityEngine.PostProcessing {
     using SSRReflectionBlendType = ScreenSpaceReflectionModel.SSRReflectionBlendType;
+    using SSRResolution = ScreenSpaceReflectionModel.SSRResolution;
 
-    public sealed class ScreenSpaceReflectionComponent : PostProcessingComponentCommandBuffer<ScreenSpaceReflectionModel>
-    {
-        static class Uniforms
-        {
-            internal static readonly int _RayStepSize                = Shader.PropertyToID("_RayStepSize");
-            internal static readonly int _AdditiveReflection         = Shader.PropertyToID("_AdditiveReflection");
-            internal static readonly int _BilateralUpsampling        = Shader.PropertyToID("_BilateralUpsampling");
-            internal static readonly int _TreatBackfaceHitAsMiss     = Shader.PropertyToID("_TreatBackfaceHitAsMiss");
-            internal static readonly int _AllowBackwardsRays         = Shader.PropertyToID("_AllowBackwardsRays");
-            internal static readonly int _TraceBehindObjects         = Shader.PropertyToID("_TraceBehindObjects");
-            internal static readonly int _MaxSteps                   = Shader.PropertyToID("_MaxSteps");
-            internal static readonly int _FullResolutionFiltering    = Shader.PropertyToID("_FullResolutionFiltering");
-            internal static readonly int _HalfResolution             = Shader.PropertyToID("_HalfResolution");
-            internal static readonly int _HighlightSuppression       = Shader.PropertyToID("_HighlightSuppression");
-            internal static readonly int _PixelsPerMeterAtOneMeter   = Shader.PropertyToID("_PixelsPerMeterAtOneMeter");
-            internal static readonly int _ScreenEdgeFading           = Shader.PropertyToID("_ScreenEdgeFading");
-            internal static readonly int _ReflectionBlur             = Shader.PropertyToID("_ReflectionBlur");
-            internal static readonly int _MaxRayTraceDistance        = Shader.PropertyToID("_MaxRayTraceDistance");
-            internal static readonly int _FadeDistance               = Shader.PropertyToID("_FadeDistance");
-            internal static readonly int _LayerThickness             = Shader.PropertyToID("_LayerThickness");
-            internal static readonly int _SSRMultiplier              = Shader.PropertyToID("_SSRMultiplier");
-            internal static readonly int _FresnelFade                = Shader.PropertyToID("_FresnelFade");
-            internal static readonly int _FresnelFadePower           = Shader.PropertyToID("_FresnelFadePower");
-            internal static readonly int _ReflectionBufferSize       = Shader.PropertyToID("_ReflectionBufferSize");
-            internal static readonly int _ScreenSize                 = Shader.PropertyToID("_ScreenSize");
-            internal static readonly int _InvScreenSize              = Shader.PropertyToID("_InvScreenSize");
-            internal static readonly int _ProjInfo                   = Shader.PropertyToID("_ProjInfo");
-            internal static readonly int _CameraClipInfo             = Shader.PropertyToID("_CameraClipInfo");
-            internal static readonly int _ProjectToPixelMatrix       = Shader.PropertyToID("_ProjectToPixelMatrix");
-            internal static readonly int _WorldToCameraMatrix        = Shader.PropertyToID("_WorldToCameraMatrix");
-            internal static readonly int _CameraToWorldMatrix        = Shader.PropertyToID("_CameraToWorldMatrix");
-            internal static readonly int _Axis                       = Shader.PropertyToID("_Axis");
-            internal static readonly int _CurrentMipLevel            = Shader.PropertyToID("_CurrentMipLevel");
-            internal static readonly int _NormalAndRoughnessTexture  = Shader.PropertyToID("_NormalAndRoughnessTexture");
-            internal static readonly int _HitPointTexture            = Shader.PropertyToID("_HitPointTexture");
-            internal static readonly int _BlurTexture                = Shader.PropertyToID("_BlurTexture");
-            internal static readonly int _FilteredReflections        = Shader.PropertyToID("_FilteredReflections");
-            internal static readonly int _FinalReflectionTexture     = Shader.PropertyToID("_FinalReflectionTexture");
-            internal static readonly int _TempTexture                = Shader.PropertyToID("_TempTexture");
+    public sealed class ScreenSpaceReflectionComponent : PostProcessingComponentCommandBuffer<ScreenSpaceReflectionModel> {
+        private static class Uniforms {
+            internal static readonly int _RayStepSize = Shader.PropertyToID("_RayStepSize");
+            internal static readonly int _AdditiveReflection = Shader.PropertyToID("_AdditiveReflection");
+            internal static readonly int _BilateralUpsampling = Shader.PropertyToID("_BilateralUpsampling");
+            internal static readonly int _TreatBackfaceHitAsMiss = Shader.PropertyToID("_TreatBackfaceHitAsMiss");
+            internal static readonly int _AllowBackwardsRays = Shader.PropertyToID("_AllowBackwardsRays");
+            internal static readonly int _TraceBehindObjects = Shader.PropertyToID("_TraceBehindObjects");
+            internal static readonly int _MaxSteps = Shader.PropertyToID("_MaxSteps");
+            internal static readonly int _FullResolutionFiltering = Shader.PropertyToID("_FullResolutionFiltering");
+            internal static readonly int _HalfResolution = Shader.PropertyToID("_HalfResolution");
+            internal static readonly int _HighlightSuppression = Shader.PropertyToID("_HighlightSuppression");
+            internal static readonly int _PixelsPerMeterAtOneMeter = Shader.PropertyToID("_PixelsPerMeterAtOneMeter");
+            internal static readonly int _ScreenEdgeFading = Shader.PropertyToID("_ScreenEdgeFading");
+            internal static readonly int _ReflectionBlur = Shader.PropertyToID("_ReflectionBlur");
+            internal static readonly int _MaxRayTraceDistance = Shader.PropertyToID("_MaxRayTraceDistance");
+            internal static readonly int _FadeDistance = Shader.PropertyToID("_FadeDistance");
+            internal static readonly int _LayerThickness = Shader.PropertyToID("_LayerThickness");
+            internal static readonly int _SSRMultiplier = Shader.PropertyToID("_SSRMultiplier");
+            internal static readonly int _FresnelFade = Shader.PropertyToID("_FresnelFade");
+            internal static readonly int _FresnelFadePower = Shader.PropertyToID("_FresnelFadePower");
+            internal static readonly int _ReflectionBufferSize = Shader.PropertyToID("_ReflectionBufferSize");
+            internal static readonly int _ScreenSize = Shader.PropertyToID("_ScreenSize");
+            internal static readonly int _InvScreenSize = Shader.PropertyToID("_InvScreenSize");
+            internal static readonly int _ProjInfo = Shader.PropertyToID("_ProjInfo");
+            internal static readonly int _CameraClipInfo = Shader.PropertyToID("_CameraClipInfo");
+            internal static readonly int _ProjectToPixelMatrix = Shader.PropertyToID("_ProjectToPixelMatrix");
+            internal static readonly int _WorldToCameraMatrix = Shader.PropertyToID("_WorldToCameraMatrix");
+            internal static readonly int _CameraToWorldMatrix = Shader.PropertyToID("_CameraToWorldMatrix");
+            internal static readonly int _Axis = Shader.PropertyToID("_Axis");
+            internal static readonly int _CurrentMipLevel = Shader.PropertyToID("_CurrentMipLevel");
+            internal static readonly int _NormalAndRoughnessTexture = Shader.PropertyToID("_NormalAndRoughnessTexture");
+            internal static readonly int _HitPointTexture = Shader.PropertyToID("_HitPointTexture");
+            internal static readonly int _BlurTexture = Shader.PropertyToID("_BlurTexture");
+            internal static readonly int _FilteredReflections = Shader.PropertyToID("_FilteredReflections");
+            internal static readonly int _FinalReflectionTexture = Shader.PropertyToID("_FinalReflectionTexture");
+            internal static readonly int _TempTexture = Shader.PropertyToID("_TempTexture");
         }
 
         // Unexposed variables
-        bool k_HighlightSuppression = false;
-        bool k_TraceBehindObjects = true;
-        bool k_TreatBackfaceHitAsMiss = false;
-        bool k_BilateralUpsample = true;
+        private bool k_HighlightSuppression = false;
+        private bool k_TraceBehindObjects = true;
+        private bool k_TreatBackfaceHitAsMiss = false;
+        private bool k_BilateralUpsample = true;
 
-        enum PassIndex
-        {
+        private enum PassIndex {
             RayTraceStep = 0,
             CompositeFinal = 1,
             Blur = 2,
@@ -65,26 +61,22 @@ namespace UnityEngine.PostProcessing
             PoissonBlur = 8,
         }
 
-        readonly int[] m_ReflectionTextures = new int[5];
+        private readonly int[] m_ReflectionTextures = new int[5];
 
         // Not really needed as SSR only works in deferred right now
-        public override DepthTextureMode GetCameraFlags()
-        {
+        public override DepthTextureMode GetCameraFlags() {
             return DepthTextureMode.Depth;
         }
 
-        public override bool active
-        {
-            get
-            {
+        public override bool active {
+            get {
                 return model.enabled
                        && context.isGBufferAvailable
                        && !context.interrupted;
             }
         }
 
-        public override void OnEnable()
-        {
+        public override void OnEnable() {
             m_ReflectionTextures[0] = Shader.PropertyToID("_ReflectionTexture0");
             m_ReflectionTextures[1] = Shader.PropertyToID("_ReflectionTexture1");
             m_ReflectionTextures[2] = Shader.PropertyToID("_ReflectionTexture2");
@@ -92,26 +84,23 @@ namespace UnityEngine.PostProcessing
             m_ReflectionTextures[4] = Shader.PropertyToID("_ReflectionTexture4");
         }
 
-        public override string GetName()
-        {
+        public override string GetName() {
             return "Screen Space Reflection";
         }
 
-        public override CameraEvent GetCameraEvent()
-        {
+        public override CameraEvent GetCameraEvent() {
             return CameraEvent.AfterFinalPass;
         }
 
-        public override void PopulateCommandBuffer(CommandBuffer cb)
-        {
+        public override void PopulateCommandBuffer(CommandBuffer cb) {
             var settings = model.settings;
             var camera = context.camera;
 
             // Material setup
             int downsampleAmount = (settings.reflection.reflectionQuality == SSRResolution.High) ? 1 : 2;
 
-            var rtW = context.width / downsampleAmount;
-            var rtH = context.height / downsampleAmount;
+            int rtW = context.width / downsampleAmount;
+            int rtH = context.height / downsampleAmount;
 
             float sWidth = context.width;
             float sHeight = context.height;
@@ -180,12 +169,12 @@ namespace UnityEngine.PostProcessing
             var intermediateFormat = context.isHdr ? RenderTextureFormat.ARGBHalf : RenderTextureFormat.ARGB32;
             const int maxMip = 5;
 
-            var kNormalAndRoughnessTexture = Uniforms._NormalAndRoughnessTexture;
-            var kHitPointTexture = Uniforms._HitPointTexture;
-            var kBlurTexture = Uniforms._BlurTexture;
-            var kFilteredReflections = Uniforms._FilteredReflections;
-            var kFinalReflectionTexture = Uniforms._FinalReflectionTexture;
-            var kTempTexture = Uniforms._TempTexture;
+            int kNormalAndRoughnessTexture = Uniforms._NormalAndRoughnessTexture;
+            int kHitPointTexture = Uniforms._HitPointTexture;
+            int kBlurTexture = Uniforms._BlurTexture;
+            int kFilteredReflections = Uniforms._FilteredReflections;
+            int kFinalReflectionTexture = Uniforms._FinalReflectionTexture;
+            int kTempTexture = Uniforms._TempTexture;
 
             // RGB: Normals, A: Roughness.
             // Has the nice benefit of allowing us to control the filtering mode as well.
@@ -193,8 +182,7 @@ namespace UnityEngine.PostProcessing
 
             cb.GetTemporaryRT(kHitPointTexture, rtW, rtH, 0, FilterMode.Bilinear, RenderTextureFormat.ARGBHalf, RenderTextureReadWrite.Linear);
 
-            for (int i = 0; i < maxMip; ++i)
-            {
+            for (int i = 0; i < maxMip; ++i) {
                 // We explicitly interpolate during bilateral upsampling.
                 cb.GetTemporaryRT(m_ReflectionTextures[i], rtW >> i, rtH >> i, 0, FilterMode.Bilinear, intermediateFormat);
             }
@@ -207,8 +195,7 @@ namespace UnityEngine.PostProcessing
             cb.Blit(BuiltinRenderTextureType.CameraTarget, kFilteredReflections, material, (int)PassIndex.HitPointToReflections);
             cb.Blit(kFilteredReflections, m_ReflectionTextures[0], material, (int)PassIndex.PoissonBlur);
 
-            for (int i = 1; i < maxMip; ++i)
-            {
+            for (int i = 1; i < maxMip; ++i) {
                 int inputTex = m_ReflectionTextures[i - 1];
 
                 int lowMip = i;

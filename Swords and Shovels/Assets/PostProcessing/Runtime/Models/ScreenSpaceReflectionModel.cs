@@ -1,25 +1,20 @@
 using System;
 
-namespace UnityEngine.PostProcessing
-{
+namespace UnityEngine.PostProcessing {
     [Serializable]
-    public class ScreenSpaceReflectionModel : PostProcessingModel
-    {
-        public enum SSRResolution
-        {
+    public class ScreenSpaceReflectionModel : PostProcessingModel {
+        public enum SSRResolution {
             High = 0,
             Low = 2
         }
 
-        public enum SSRReflectionBlendType
-        {
+        public enum SSRReflectionBlendType {
             PhysicallyBased,
             Additive
         }
 
         [Serializable]
-        public struct IntensitySettings
-        {
+        public struct IntensitySettings {
             [Tooltip("Nonphysical multiplier for the SSR reflections. 1.0 is physically based.")]
             [Range(0.0f, 2.0f)]
             public float reflectionMultiplier;
@@ -38,8 +33,7 @@ namespace UnityEngine.PostProcessing
         }
 
         [Serializable]
-        public struct ReflectionSettings
-        {
+        public struct ReflectionSettings {
             // When enabled, we just add our reflections on top of the existing ones. This is physically incorrect, but several
             // popular demos and games have taken this approach, and it does hide some artifacts.
             [Tooltip("How the reflections are blended into the render.")]
@@ -74,28 +68,22 @@ namespace UnityEngine.PostProcessing
         }
 
         [Serializable]
-        public struct ScreenEdgeMask
-        {
+        public struct ScreenEdgeMask {
             [Tooltip("Higher = fade out SSRR near the edge of the screen so that reflections don't pop under camera motion.")]
             [Range(0.0f, 1.0f)]
             public float intensity;
         }
 
         [Serializable]
-        public struct Settings
-        {
+        public struct Settings {
             public ReflectionSettings reflection;
             public IntensitySettings intensity;
             public ScreenEdgeMask screenEdgeMask;
 
-            public static Settings defaultSettings
-            {
-                get
-                {
-                    return new Settings
-                    {
-                        reflection = new ReflectionSettings
-                        {
+            public static Settings defaultSettings {
+                get {
+                    return new Settings {
+                        reflection = new ReflectionSettings {
                             blendType = SSRReflectionBlendType.PhysicallyBased,
                             reflectionQuality = SSRResolution.Low,
                             maxDistance = 100f,
@@ -106,8 +94,7 @@ namespace UnityEngine.PostProcessing
                             reflectBackfaces = false
                         },
 
-                        intensity = new IntensitySettings
-                        {
+                        intensity = new IntensitySettings {
                             reflectionMultiplier = 1f,
                             fadeDistance = 100f,
 
@@ -115,8 +102,7 @@ namespace UnityEngine.PostProcessing
                             fresnelFadePower = 1f,
                         },
 
-                        screenEdgeMask = new ScreenEdgeMask
-                        {
+                        screenEdgeMask = new ScreenEdgeMask {
                             intensity = 0.03f
                         }
                     };
@@ -125,15 +111,13 @@ namespace UnityEngine.PostProcessing
         }
 
         [SerializeField]
-        Settings m_Settings = Settings.defaultSettings;
-        public Settings settings
-        {
+        private Settings m_Settings = Settings.defaultSettings;
+        public Settings settings {
             get { return m_Settings; }
             set { m_Settings = value; }
         }
 
-        public override void Reset()
-        {
+        public override void Reset() {
             m_Settings = Settings.defaultSettings;
         }
     }

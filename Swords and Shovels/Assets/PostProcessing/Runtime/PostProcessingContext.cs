@@ -1,7 +1,5 @@
-namespace UnityEngine.PostProcessing
-{
-    public class PostProcessingContext
-    {
+namespace UnityEngine.PostProcessing {
+    public class PostProcessingContext {
         public PostProcessingProfile profile;
         public Camera camera;
 
@@ -10,13 +8,11 @@ namespace UnityEngine.PostProcessing
 
         public bool interrupted { get; private set; }
 
-        public void Interrupt()
-        {
+        public void Interrupt() {
             interrupted = true;
         }
 
-        public PostProcessingContext Reset()
-        {
+        public PostProcessingContext Reset() {
             profile = null;
             camera = null;
             materialFactory = null;
@@ -26,13 +22,11 @@ namespace UnityEngine.PostProcessing
         }
 
         #region Helpers
-        public bool isGBufferAvailable
-        {
+        public bool isGBufferAvailable {
             get { return camera.actualRenderingPath == RenderingPath.DeferredShading; }
         }
 
-        public bool isHdr
-        {
+        public bool isHdr {
             // No UNITY_5_6_OR_NEWER defined in early betas of 5.6
 #if UNITY_5_6 || UNITY_5_6_OR_NEWER
             get { return camera.allowHDR; }
@@ -41,18 +35,15 @@ namespace UnityEngine.PostProcessing
 #endif
         }
 
-        public int width
-        {
+        public int width {
             get { return camera.pixelWidth; }
         }
 
-        public int height
-        {
+        public int height {
             get { return camera.pixelHeight; }
         }
 
-        public Rect viewport
-        {
+        public Rect viewport {
             get { return camera.rect; } // Normalized coordinates
         }
         #endregion

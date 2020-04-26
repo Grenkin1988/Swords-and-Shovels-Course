@@ -1,13 +1,10 @@
 using System;
 
-namespace UnityEngine.PostProcessing
-{
+namespace UnityEngine.PostProcessing {
     [Serializable]
-    public class GrainModel : PostProcessingModel
-    {
+    public class GrainModel : PostProcessingModel {
         [Serializable]
-        public struct Settings
-        {
+        public struct Settings {
             [Tooltip("Enable the use of colored grain.")]
             public bool colored;
 
@@ -20,12 +17,9 @@ namespace UnityEngine.PostProcessing
             [Range(0f, 1f), Tooltip("Controls the noisiness response curve based on scene luminance. Lower values mean less noise in dark areas.")]
             public float luminanceContribution;
 
-            public static Settings defaultSettings
-            {
-                get
-                {
-                    return new Settings
-                    {
+            public static Settings defaultSettings {
+                get {
+                    return new Settings {
                         colored = true,
                         intensity = 0.5f,
                         size = 1f,
@@ -36,15 +30,13 @@ namespace UnityEngine.PostProcessing
         }
 
         [SerializeField]
-        Settings m_Settings = Settings.defaultSettings;
-        public Settings settings
-        {
+        private Settings m_Settings = Settings.defaultSettings;
+        public Settings settings {
             get { return m_Settings; }
             set { m_Settings = value; }
         }
 
-        public override void Reset()
-        {
+        public override void Reset() {
             m_Settings = Settings.defaultSettings;
         }
     }

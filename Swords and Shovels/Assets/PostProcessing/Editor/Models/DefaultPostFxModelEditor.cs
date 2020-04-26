@@ -1,22 +1,20 @@
 using System.Collections.Generic;
 
-namespace UnityEditor.PostProcessing
-{
-    public class DefaultPostFxModelEditor : PostProcessingModelEditor
-    {
-        List<SerializedProperty> m_Properties = new List<SerializedProperty>();
+namespace UnityEditor.PostProcessing {
+    public class DefaultPostFxModelEditor : PostProcessingModelEditor {
+        private List<SerializedProperty> m_Properties = new List<SerializedProperty>();
 
-        public override void OnEnable()
-        {
+        public override void OnEnable() {
             var iter = m_SettingsProperty.Copy().GetEnumerator();
-            while (iter.MoveNext())
+            while (iter.MoveNext()) {
                 m_Properties.Add(((SerializedProperty)iter.Current).Copy());
+            }
         }
 
-        public override void OnInspectorGUI()
-        {
-            foreach (var property in m_Properties)
+        public override void OnInspectorGUI() {
+            foreach (var property in m_Properties) {
                 EditorGUILayout.PropertyField(property);
+            }
         }
     }
 }

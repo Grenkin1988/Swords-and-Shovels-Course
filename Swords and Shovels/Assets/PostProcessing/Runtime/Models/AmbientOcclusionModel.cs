@@ -1,12 +1,9 @@
 using System;
 
-namespace UnityEngine.PostProcessing
-{
+namespace UnityEngine.PostProcessing {
     [Serializable]
-    public class AmbientOcclusionModel : PostProcessingModel
-    {
-        public enum SampleCount
-        {
+    public class AmbientOcclusionModel : PostProcessingModel {
+        public enum SampleCount {
             Lowest = 3,
             Low = 6,
             Medium = 10,
@@ -14,8 +11,7 @@ namespace UnityEngine.PostProcessing
         }
 
         [Serializable]
-        public struct Settings
-        {
+        public struct Settings {
             [Range(0, 4), Tooltip("Degree of darkness produced by the effect.")]
             public float intensity;
 
@@ -37,12 +33,9 @@ namespace UnityEngine.PostProcessing
             [Tooltip("Toggles the use of a higher precision depth texture with the forward rendering path (may impact performances). Has no effect with the deferred rendering path.")]
             public bool highPrecision;
 
-            public static Settings defaultSettings
-            {
-                get
-                {
-                    return new Settings
-                    {
+            public static Settings defaultSettings {
+                get {
+                    return new Settings {
                         intensity = 1f,
                         radius = 0.3f,
                         sampleCount = SampleCount.Medium,
@@ -56,15 +49,13 @@ namespace UnityEngine.PostProcessing
         }
 
         [SerializeField]
-        Settings m_Settings = Settings.defaultSettings;
-        public Settings settings
-        {
+        private Settings m_Settings = Settings.defaultSettings;
+        public Settings settings {
             get { return m_Settings; }
             set { m_Settings = value; }
         }
 
-        public override void Reset()
-        {
+        public override void Reset() {
             m_Settings = Settings.defaultSettings;
         }
     }

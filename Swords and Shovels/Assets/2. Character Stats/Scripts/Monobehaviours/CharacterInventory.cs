@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.UI;
+﻿using UnityEngine;
 
-public class CharacterInventory : MonoBehaviour
-{
+public class CharacterInventory : MonoBehaviour {
     #region Variable Declarations
     public static CharacterInventory instance;
     #endregion
 
     #region Initializations
-    void Start()
-    {
+    private void Start() {
         instance = this;
     }
     #endregion

@@ -1,24 +1,16 @@
-using System;
 using UnityEngine;
 
-public class SmoothFollowTarget : MonoBehaviour
-{
+public class SmoothFollowTarget : MonoBehaviour {
     public GameObject target;
-    Vector3 offset;
+    private Vector3 offset;
+    private bool b;
 
-    bool b;
-
-    private void LateUpdate()
-    {
-        if (target == null)
-        {
+    private void LateUpdate() {
+        if (target == null) {
             target = GameObject.FindGameObjectWithTag("Player");
             return;
-        }
-        else
-        {
-            if (!b)
-            {
+        } else {
+            if (!b) {
                 offset = transform.position - target.transform.position;
                 b = true;
             }

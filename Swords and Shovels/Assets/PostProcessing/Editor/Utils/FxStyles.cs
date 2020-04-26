@@ -1,9 +1,7 @@
 using UnityEngine;
 
-namespace UnityEditor.PostProcessing
-{
-    public static class FxStyles
-    {
+namespace UnityEditor.PostProcessing {
+    public static class FxStyles {
         public static GUIStyle tickStyleRight;
         public static GUIStyle tickStyleLeft;
         public static GUIStyle tickStyleCenter;
@@ -31,22 +29,18 @@ namespace UnityEditor.PostProcessing
 
         public static GUIStyle centeredMiniLabel;
 
-        static FxStyles()
-        {
-            tickStyleRight = new GUIStyle("Label")
-            {
+        static FxStyles() {
+            tickStyleRight = new GUIStyle("Label") {
                 alignment = TextAnchor.MiddleRight,
                 fontSize = 9
             };
 
-            tickStyleLeft = new GUIStyle("Label")
-            {
+            tickStyleLeft = new GUIStyle("Label") {
                 alignment = TextAnchor.MiddleLeft,
                 fontSize = 9
             };
 
-            tickStyleCenter = new GUIStyle("Label")
-            {
+            tickStyleCenter = new GUIStyle("Label") {
                 alignment = TextAnchor.MiddleCenter,
                 fontSize = 9
             };
@@ -58,28 +52,24 @@ namespace UnityEditor.PostProcessing
 
             preLabel = new GUIStyle("ShurikenLabel");
 
-            hueCenterCursor = new GUIStyle("ColorPicker2DThumb")
-            {
+            hueCenterCursor = new GUIStyle("ColorPicker2DThumb") {
                 normal = { background = (Texture2D)EditorGUIUtility.LoadRequired("Builtin Skins/DarkSkin/Images/ShurikenPlus.png") },
                 fixedWidth = 6,
                 fixedHeight = 6
             };
 
-            hueRangeCursor = new GUIStyle(hueCenterCursor)
-            {
+            hueRangeCursor = new GUIStyle(hueCenterCursor) {
                 normal = { background = (Texture2D)EditorGUIUtility.LoadRequired("Builtin Skins/DarkSkin/Images/CircularToggle_ON.png") }
             };
 
             wheelThumb = new GUIStyle("ColorPicker2DThumb");
 
-            centeredBoldLabel = new GUIStyle(GUI.skin.GetStyle("Label"))
-            {
+            centeredBoldLabel = new GUIStyle(GUI.skin.GetStyle("Label")) {
                 alignment = TextAnchor.UpperCenter,
                 fontStyle = FontStyle.Bold
             };
 
-            centeredMiniLabel = new GUIStyle(EditorStyles.centeredGreyMiniLabel)
-            {
+            centeredMiniLabel = new GUIStyle(EditorStyles.centeredGreyMiniLabel) {
                 alignment = TextAnchor.UpperCenter
             };
 
@@ -88,8 +78,7 @@ namespace UnityEditor.PostProcessing
                     !Mathf.Approximately(wheelThumb.fixedHeight, 0f) ? wheelThumb.fixedHeight : wheelThumb.padding.vertical
                     );
 
-            header = new GUIStyle("ShurikenModuleTitle")
-            {
+            header = new GUIStyle("ShurikenModuleTitle") {
                 font = (new GUIStyle("Label")).font,
                 border = new RectOffset(15, 7, 4, 4),
                 fixedHeight = 22,
@@ -102,10 +91,11 @@ namespace UnityEditor.PostProcessing
             playIcon = (Texture2D)EditorGUIUtility.LoadRequired("Builtin Skins/DarkSkin/Images/IN foldout act.png");
             checkerIcon = (Texture2D)EditorGUIUtility.LoadRequired("Icons/CheckerFloor.png");
 
-            if (EditorGUIUtility.isProSkin)
+            if (EditorGUIUtility.isProSkin) {
                 paneOptionsIcon = (Texture2D)EditorGUIUtility.LoadRequired("Builtin Skins/DarkSkin/Images/pane options.png");
-            else
+            } else {
                 paneOptionsIcon = (Texture2D)EditorGUIUtility.LoadRequired("Builtin Skins/LightSkin/Images/pane options.png");
+            }
         }
     }
 }

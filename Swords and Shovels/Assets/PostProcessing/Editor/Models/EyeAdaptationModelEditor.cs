@@ -1,27 +1,23 @@
-using UnityEngine;
 using UnityEngine.PostProcessing;
 
-namespace UnityEditor.PostProcessing
-{
+namespace UnityEditor.PostProcessing {
     using Settings = EyeAdaptationModel.Settings;
 
     [PostProcessingModelEditor(typeof(EyeAdaptationModel))]
-    public class EyeAdaptationModelEditor : PostProcessingModelEditor
-    {
-        SerializedProperty m_LowPercent;
-        SerializedProperty m_HighPercent;
-        SerializedProperty m_MinLuminance;
-        SerializedProperty m_MaxLuminance;
-        SerializedProperty m_KeyValue;
-        SerializedProperty m_DynamicKeyValue;
-        SerializedProperty m_AdaptationType;
-        SerializedProperty m_SpeedUp;
-        SerializedProperty m_SpeedDown;
-        SerializedProperty m_LogMin;
-        SerializedProperty m_LogMax;
+    public class EyeAdaptationModelEditor : PostProcessingModelEditor {
+        private SerializedProperty m_LowPercent;
+        private SerializedProperty m_HighPercent;
+        private SerializedProperty m_MinLuminance;
+        private SerializedProperty m_MaxLuminance;
+        private SerializedProperty m_KeyValue;
+        private SerializedProperty m_DynamicKeyValue;
+        private SerializedProperty m_AdaptationType;
+        private SerializedProperty m_SpeedUp;
+        private SerializedProperty m_SpeedDown;
+        private SerializedProperty m_LogMin;
+        private SerializedProperty m_LogMax;
 
-        public override void OnEnable()
-        {
+        public override void OnEnable() {
             m_LowPercent = FindSetting((Settings x) => x.lowPercent);
             m_HighPercent = FindSetting((Settings x) => x.highPercent);
             m_MinLuminance = FindSetting((Settings x) => x.minLuminance);
@@ -35,10 +31,10 @@ namespace UnityEditor.PostProcessing
             m_LogMax = FindSetting((Settings x) => x.logMax);
         }
 
-        public override void OnInspectorGUI()
-        {
-            if (!GraphicsUtils.supportsDX11)
+        public override void OnInspectorGUI() {
+            if (!GraphicsUtils.supportsDX11) {
                 EditorGUILayout.HelpBox("This effect requires support for compute shaders. Enabling it won't do anything on unsupported platforms.", MessageType.Warning);
+            }
 
             EditorGUILayout.LabelField("Luminosity range", EditorStyles.boldLabel);
             EditorGUI.indentLevel++;
@@ -61,8 +57,9 @@ namespace UnityEditor.PostProcessing
             EditorGUILayout.PropertyField(m_MaxLuminance, EditorGUIHelper.GetContent("Maximum (EV)"));
             EditorGUILayout.PropertyField(m_DynamicKeyValue);
 
-            if (!m_DynamicKeyValue.boolValue)
+            if (!m_DynamicKeyValue.boolValue) {
                 EditorGUILayout.PropertyField(m_KeyValue);
+            }
 
             EditorGUI.indentLevel--;
             EditorGUILayout.Space();
@@ -72,8 +69,7 @@ namespace UnityEditor.PostProcessing
 
             EditorGUILayout.PropertyField(m_AdaptationType, EditorGUIHelper.GetContent("Type"));
 
-            if (m_AdaptationType.intValue == (int)EyeAdaptationModel.EyeAdaptationType.Progressive)
-            {
+            if (m_AdaptationType.intValue == (int)EyeAdaptationModel.EyeAdaptationType.Progressive) {
                 EditorGUI.indentLevel++;
                 EditorGUILayout.PropertyField(m_SpeedUp);
                 EditorGUILayout.PropertyField(m_SpeedDown);

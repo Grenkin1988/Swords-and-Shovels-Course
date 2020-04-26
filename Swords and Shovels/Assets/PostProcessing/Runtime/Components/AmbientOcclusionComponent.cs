@@ -1,97 +1,87 @@
 using UnityEngine.Rendering;
 
-namespace UnityEngine.PostProcessing
-{
+namespace UnityEngine.PostProcessing {
     using DebugMode = BuiltinDebugViewsModel.Mode;
 
-    public sealed class AmbientOcclusionComponent : PostProcessingComponentCommandBuffer<AmbientOcclusionModel>
-    {
-        static class Uniforms
-        {
-            internal static readonly int _Intensity         = Shader.PropertyToID("_Intensity");
-            internal static readonly int _Radius            = Shader.PropertyToID("_Radius");
-            internal static readonly int _FogParams         = Shader.PropertyToID("_FogParams");
-            internal static readonly int _Downsample        = Shader.PropertyToID("_Downsample");
-            internal static readonly int _SampleCount       = Shader.PropertyToID("_SampleCount");
+    public sealed class AmbientOcclusionComponent : PostProcessingComponentCommandBuffer<AmbientOcclusionModel> {
+        private static class Uniforms {
+            internal static readonly int _Intensity = Shader.PropertyToID("_Intensity");
+            internal static readonly int _Radius = Shader.PropertyToID("_Radius");
+            internal static readonly int _FogParams = Shader.PropertyToID("_FogParams");
+            internal static readonly int _Downsample = Shader.PropertyToID("_Downsample");
+            internal static readonly int _SampleCount = Shader.PropertyToID("_SampleCount");
             internal static readonly int _OcclusionTexture1 = Shader.PropertyToID("_OcclusionTexture1");
             internal static readonly int _OcclusionTexture2 = Shader.PropertyToID("_OcclusionTexture2");
-            internal static readonly int _OcclusionTexture  = Shader.PropertyToID("_OcclusionTexture");
-            internal static readonly int _MainTex           = Shader.PropertyToID("_MainTex");
-            internal static readonly int _TempRT            = Shader.PropertyToID("_TempRT");
+            internal static readonly int _OcclusionTexture = Shader.PropertyToID("_OcclusionTexture");
+            internal static readonly int _MainTex = Shader.PropertyToID("_MainTex");
+            internal static readonly int _TempRT = Shader.PropertyToID("_TempRT");
         }
 
-        const string k_BlitShaderString = "Hidden/Post FX/Blit";
-        const string k_ShaderString = "Hidden/Post FX/Ambient Occlusion";
-
-        readonly RenderTargetIdentifier[] m_MRT =
+        private const string k_BlitShaderString = "Hidden/Post FX/Blit";
+        private const string k_ShaderString = "Hidden/Post FX/Ambient Occlusion";
+        private readonly RenderTargetIdentifier[] m_MRT =
         {
             BuiltinRenderTextureType.GBuffer0, // Albedo, Occ
             BuiltinRenderTextureType.CameraTarget // Ambient
         };
 
-        enum OcclusionSource
-        {
+        private enum OcclusionSource {
             DepthTexture,
             DepthNormalsTexture,
             GBuffer
         }
 
-        OcclusionSource occlusionSource
-        {
-            get
-            {
-                if (context.isGBufferAvailable && !model.settings.forceForwardCompatibility)
+        private OcclusionSource occlusionSource {
+            get {
+                if (context.isGBufferAvailable && !model.settings.forceForwardCompatibility) {
                     return OcclusionSource.GBuffer;
+                }
 
-                if (model.settings.highPrecision && (!context.isGBufferAvailable || model.settings.forceForwardCompatibility))
+                if (model.settings.highPrecision && (!context.isGBufferAvailable || model.settings.forceForwardCompatibility)) {
                     return OcclusionSource.DepthTexture;
+                }
 
                 return OcclusionSource.DepthNormalsTexture;
             }
         }
 
-        bool ambientOnlySupported
-        {
+        private bool ambientOnlySupported {
             get { return context.isHdr && model.settings.ambientOnly && context.isGBufferAvailable && !model.settings.forceForwardCompatibility; }
         }
 
-        public override bool active
-        {
-            get
-            {
+        public override bool active {
+            get {
                 return model.enabled
                        && model.settings.intensity > 0f
                        && !context.interrupted;
             }
         }
 
-        public override DepthTextureMode GetCameraFlags()
-        {
+        public override DepthTextureMode GetCameraFlags() {
             var flags = DepthTextureMode.None;
 
-            if (occlusionSource == OcclusionSource.DepthTexture)
+            if (occlusionSource == OcclusionSource.DepthTexture) {
                 flags |= DepthTextureMode.Depth;
+            }
 
-            if (occlusionSource != OcclusionSource.GBuffer)
+            if (occlusionSource != OcclusionSource.GBuffer) {
                 flags |= DepthTextureMode.DepthNormals;
+            }
 
             return flags;
         }
 
-        public override string GetName()
-        {
+        public override string GetName() {
             return "Ambient Occlusion";
         }
 
-        public override CameraEvent GetCameraEvent()
-        {
+        public override CameraEvent GetCameraEvent() {
             return ambientOnlySupported && !context.profile.debugViews.IsModeActive(DebugMode.AmbientOcclusion)
                    ? CameraEvent.BeforeReflections
                    : CameraEvent.BeforeImageEffectsOpaque;
         }
 
-        public override void PopulateCommandBuffer(CommandBuffer cb)
-        {
+        public override void PopulateCommandBuffer(CommandBuffer cb) {
             var settings = model.settings;
 
             // Material setup
@@ -104,12 +94,10 @@ namespace UnityEngine.PostProcessing
             material.SetFloat(Uniforms._Downsample, settings.downsampling ? 0.5f : 1f);
             material.SetInt(Uniforms._SampleCount, (int)settings.sampleCount);
 
-            if (!context.isGBufferAvailable && RenderSettings.fog)
-            {
+            if (!context.isGBufferAvailable && RenderSettings.fog) {
                 material.SetVector(Uniforms._FogParams, new Vector3(RenderSettings.fogDensity, RenderSettings.fogStartDistance, RenderSettings.fogEndDistance));
 
-                switch (RenderSettings.fogMode)
-                {
+                switch (RenderSettings.fogMode) {
                     case FogMode.Linear:
                         material.EnableKeyword("FOG_LINEAR");
                         break;
@@ -120,9 +108,7 @@ namespace UnityEngine.PostProcessing
                         material.EnableKeyword("FOG_EXP2");
                         break;
                 }
-            }
-            else
-            {
+            } else {
                 material.EnableKeyword("FOG_OFF");
             }
 
@@ -134,14 +120,14 @@ namespace UnityEngine.PostProcessing
             const FilterMode kFilter = FilterMode.Bilinear;
 
             // AO buffer
-            var rtMask = Uniforms._OcclusionTexture1;
+            int rtMask = Uniforms._OcclusionTexture1;
             cb.GetTemporaryRT(rtMask, tw / ts, th / ts, 0, kFilter, kFormat, kRWMode);
 
             // AO estimation
-            cb.Blit((Texture)null, rtMask, material, (int)occlusionSource);
+            cb.Blit(null, rtMask, material, (int)occlusionSource);
 
             // Blur buffer
-            var rtBlur = Uniforms._OcclusionTexture2;
+            int rtBlur = Uniforms._OcclusionTexture2;
 
             // Separable blur (horizontal pass)
             cb.GetTemporaryRT(rtBlur, tw, th, 0, kFilter, kFormat, kRWMode);
@@ -156,19 +142,14 @@ namespace UnityEngine.PostProcessing
             cb.Blit(rtBlur, rtMask, material, 5);
             cb.ReleaseTemporaryRT(rtBlur);
 
-            if (context.profile.debugViews.IsModeActive(DebugMode.AmbientOcclusion))
-            {
+            if (context.profile.debugViews.IsModeActive(DebugMode.AmbientOcclusion)) {
                 cb.SetGlobalTexture(Uniforms._MainTex, rtMask);
                 cb.Blit(rtMask, BuiltinRenderTextureType.CameraTarget, material, 8);
                 context.Interrupt();
-            }
-            else if (ambientOnlySupported)
-            {
+            } else if (ambientOnlySupported) {
                 cb.SetRenderTarget(m_MRT, BuiltinRenderTextureType.CameraTarget);
                 cb.DrawMesh(GraphicsUtils.quad, Matrix4x4.identity, material, 0, 7);
-            }
-            else
-            {
+            } else {
                 var fbFormat = context.isHdr ? RenderTextureFormat.DefaultHDR : RenderTextureFormat.Default;
 
                 int tempRT = Uniforms._TempRT;

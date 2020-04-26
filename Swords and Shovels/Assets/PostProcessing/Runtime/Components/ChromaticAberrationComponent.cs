@@ -1,42 +1,32 @@
-namespace UnityEngine.PostProcessing
-{
-    public sealed class ChromaticAberrationComponent : PostProcessingComponentRenderTexture<ChromaticAberrationModel>
-    {
-        static class Uniforms
-        {
-            internal static readonly int _ChromaticAberration_Amount   = Shader.PropertyToID("_ChromaticAberration_Amount");
+namespace UnityEngine.PostProcessing {
+    public sealed class ChromaticAberrationComponent : PostProcessingComponentRenderTexture<ChromaticAberrationModel> {
+        private static class Uniforms {
+            internal static readonly int _ChromaticAberration_Amount = Shader.PropertyToID("_ChromaticAberration_Amount");
             internal static readonly int _ChromaticAberration_Spectrum = Shader.PropertyToID("_ChromaticAberration_Spectrum");
         }
 
-        Texture2D m_SpectrumLut;
+        private Texture2D m_SpectrumLut;
 
-        public override bool active
-        {
-            get
-            {
+        public override bool active {
+            get {
                 return model.enabled
                        && model.settings.intensity > 0f
                        && !context.interrupted;
             }
         }
 
-        public override void OnDisable()
-        {
+        public override void OnDisable() {
             GraphicsUtils.Destroy(m_SpectrumLut);
             m_SpectrumLut = null;
         }
 
-        public override void Prepare(Material uberMaterial)
-        {
+        public override void Prepare(Material uberMaterial) {
             var settings = model.settings;
             var spectralLut = settings.spectralTexture;
 
-            if (spectralLut == null)
-            {
-                if (m_SpectrumLut == null)
-                {
-                    m_SpectrumLut = new Texture2D(3, 1, TextureFormat.RGB24, false)
-                    {
+            if (spectralLut == null) {
+                if (m_SpectrumLut == null) {
+                    m_SpectrumLut = new Texture2D(3, 1, TextureFormat.RGB24, false) {
                         name = "Chromatic Aberration Spectrum Lookup",
                         filterMode = FilterMode.Bilinear,
                         wrapMode = TextureWrapMode.Clamp,

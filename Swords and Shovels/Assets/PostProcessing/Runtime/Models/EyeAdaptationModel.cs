@@ -1,19 +1,15 @@
 using System;
 
-namespace UnityEngine.PostProcessing
-{
+namespace UnityEngine.PostProcessing {
     [Serializable]
-    public class EyeAdaptationModel : PostProcessingModel
-    {
-        public enum EyeAdaptationType
-        {
+    public class EyeAdaptationModel : PostProcessingModel {
+        public enum EyeAdaptationType {
             Progressive,
             Fixed
         }
 
         [Serializable]
-        public struct Settings
-        {
+        public struct Settings {
             [Range(1f, 99f), Tooltip("Filters the dark part of the histogram when computing the average luminance to avoid very dark pixels from contributing to the auto exposure. Unit is in percent.")]
             public float lowPercent;
 
@@ -47,12 +43,9 @@ namespace UnityEngine.PostProcessing
             [Range(1, 16), Tooltip("Upper bound for the brightness range of the generated histogram (in EV). The bigger the spread between min & max, the lower the precision will be.")]
             public int logMax;
 
-            public static Settings defaultSettings
-            {
-                get
-                {
-                    return new Settings
-                    {
+            public static Settings defaultSettings {
+                get {
+                    return new Settings {
                         lowPercent = 45f,
                         highPercent = 95f,
 
@@ -73,15 +66,13 @@ namespace UnityEngine.PostProcessing
         }
 
         [SerializeField]
-        Settings m_Settings = Settings.defaultSettings;
-        public Settings settings
-        {
+        private Settings m_Settings = Settings.defaultSettings;
+        public Settings settings {
             get { return m_Settings; }
             set { m_Settings = value; }
         }
 
-        public override void Reset()
-        {
+        public override void Reset() {
             m_Settings = Settings.defaultSettings;
         }
     }

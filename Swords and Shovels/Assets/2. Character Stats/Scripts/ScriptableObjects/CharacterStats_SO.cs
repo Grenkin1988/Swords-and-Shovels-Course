@@ -1,14 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEditor;
+﻿using UnityEditor;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "NewStats", menuName = "Character/Stats", order = 1)]
-public class CharacterStats_SO : ScriptableObject
-{
+public class CharacterStats_SO : ScriptableObject {
     [System.Serializable]
-    public class CharLevelUps
-    {
+    public class CharLevelUps {
         public int maxHealth;
         public int maxMana;
         public int maxWealth;
@@ -55,44 +51,31 @@ public class CharacterStats_SO : ScriptableObject
     #endregion
 
     #region Stat Increasers
-    public void ApplyHealth(int healthAmount)
-    {
-        if ((currentHealth + healthAmount) > maxHealth)
-        {
+    public void ApplyHealth(int healthAmount) {
+        if ((currentHealth + healthAmount) > maxHealth) {
             currentHealth = maxHealth;
-        }
-        else
-        {
+        } else {
             currentHealth += healthAmount;
         }
     }
 
-    public void ApplyMana(int manaAmount)
-    {
-        if ((currentMana + manaAmount) > maxMana)
-        {
+    public void ApplyMana(int manaAmount) {
+        if ((currentMana + manaAmount) > maxMana) {
             currentMana = maxMana;
-        }
-        else
-        {
+        } else {
             currentMana += manaAmount;
         }
     }
 
-    public void GiveWealth(int wealthAmount)
-    {
-        if ((currentWealth + wealthAmount) > maxWealth)
-        {
+    public void GiveWealth(int wealthAmount) {
+        if ((currentWealth + wealthAmount) > maxWealth) {
             currentWealth = maxWealth;
-        }
-        else
-        {
+        } else {
             currentWealth += wealthAmount;
         }
     }
 
-    public void EquipWeapon(ItemPickUp weaponPickUp, CharacterInventory charInventory, GameObject weaponSlot)
-    {
+    public void EquipWeapon(ItemPickUp weaponPickUp, CharacterInventory charInventory, GameObject weaponSlot) {
         //Rigidbody newWeapon;
 
         weapon = weaponPickUp;
@@ -101,10 +84,8 @@ public class CharacterStats_SO : ScriptableObject
         currentDamage = baseDamage + weapon.itemDefinition.itemAmount;
     }
 
-    public void EquipArmor(ItemPickUp armorPickUp, CharacterInventory charInventory)
-    {
-        switch (armorPickUp.itemDefinition.itemArmorSubType)
-        {
+    public void EquipArmor(ItemPickUp armorPickUp, CharacterInventory charInventory) {
+        switch (armorPickUp.itemDefinition.itemArmorSubType) {
             case ItemArmorSubType.Head:
                 //charInventory.inventoryDisplaySlots[3].sprite = armorPickUp.itemDefinition.itemIcon;
                 headArmor = armorPickUp;
@@ -135,34 +116,27 @@ public class CharacterStats_SO : ScriptableObject
     #endregion
 
     #region Stat Reducers
-    public void TakeDamage(int amount)
-    {
+    public void TakeDamage(int amount) {
         currentHealth -= amount;
 
-        if (currentHealth <= 0)
-        {
+        if (currentHealth <= 0) {
             Death();
         }
     }
 
-    public void TakeMana(int amount)
-    {
+    public void TakeMana(int amount) {
         currentMana -= amount;
 
-        if (currentMana < 0)
-        {
+        if (currentMana < 0) {
             currentMana = 0;
         }
     }
 
-    public bool UnEquipWeapon(ItemPickUp weaponPickUp, CharacterInventory charInventory, GameObject weaponSlot)
-    {
+    public bool UnEquipWeapon(ItemPickUp weaponPickUp, CharacterInventory charInventory, GameObject weaponSlot) {
         bool previousWeaponSame = false;
 
-        if (weapon != null)
-        {
-            if (weapon == weaponPickUp)
-            {
+        if (weapon != null) {
+            if (weapon == weaponPickUp) {
                 previousWeaponSame = true;
             }
             //charInventory.inventoryDisplaySlots[2].sprite = null;
@@ -174,17 +148,13 @@ public class CharacterStats_SO : ScriptableObject
         return previousWeaponSame;
     }
 
-    public bool UnEquipArmor(ItemPickUp armorPickUp, CharacterInventory charInventory)
-    {
+    public bool UnEquipArmor(ItemPickUp armorPickUp, CharacterInventory charInventory) {
         bool previousArmorSame = false;
 
-        switch (armorPickUp.itemDefinition.itemArmorSubType)
-        {
+        switch (armorPickUp.itemDefinition.itemArmorSubType) {
             case ItemArmorSubType.Head:
-                if (headArmor != null)
-                {
-                    if (headArmor == armorPickUp)
-                    {
+                if (headArmor != null) {
+                    if (headArmor == armorPickUp) {
                         previousArmorSame = true;
                     }
                     //charInventory.inventoryDisplaySlots[3].sprite = null;
@@ -193,10 +163,8 @@ public class CharacterStats_SO : ScriptableObject
                 }
                 break;
             case ItemArmorSubType.Chest:
-                if (chestArmor != null)
-                { 
-                    if (chestArmor == armorPickUp)
-                    {
+                if (chestArmor != null) {
+                    if (chestArmor == armorPickUp) {
                         previousArmorSame = true;
                     }
                     //charInventory.inventoryDisplaySlots[4].sprite = null;
@@ -205,10 +173,8 @@ public class CharacterStats_SO : ScriptableObject
                 }
                 break;
             case ItemArmorSubType.Hands:
-                if (handArmor != null)
-                {
-                    if (handArmor == armorPickUp)
-                    {
+                if (handArmor != null) {
+                    if (handArmor == armorPickUp) {
                         previousArmorSame = true;
                     }
                     //charInventory.inventoryDisplaySlots[5].sprite = null;
@@ -217,10 +183,8 @@ public class CharacterStats_SO : ScriptableObject
                 }
                 break;
             case ItemArmorSubType.Legs:
-                if (legArmor != null)
-                {
-                    if (legArmor == armorPickUp)
-                    {
+                if (legArmor != null) {
+                    if (legArmor == armorPickUp) {
                         previousArmorSame = true;
                     }
                     //charInventory.inventoryDisplaySlots[6].sprite = null;
@@ -229,10 +193,8 @@ public class CharacterStats_SO : ScriptableObject
                 }
                 break;
             case ItemArmorSubType.Boots:
-                if (footArmor != null)
-                {
-                    if (footArmor == armorPickUp)
-                    {
+                if (footArmor != null) {
+                    if (footArmor == armorPickUp) {
                         previousArmorSame = true;
                     }
                     //charInventory.inventoryDisplaySlots[7].sprite = null;
@@ -247,19 +209,17 @@ public class CharacterStats_SO : ScriptableObject
     #endregion
 
     #region Character Level Up and Death
-    private void Death()
-    {
+    private void Death() {
         Debug.Log("You kicked it! Sorry Moosa-Magoose.");
         //Call to Game Manager for Death State to trigger respawn
         //Dispaly the Death visualization
     }
 
-    private void LevelUp()
-    {
+    private void LevelUp() {
         charLevel += 1;
         //Display Level Up Visualization
 
-        maxHealth = charLevelUps[charLevel -1].maxHealth;
+        maxHealth = charLevelUps[charLevel - 1].maxHealth;
         maxMana = charLevelUps[charLevel - 1].maxMana;
         maxWealth = charLevelUps[charLevel - 1].maxWealth;
         baseDamage = charLevelUps[charLevel - 1].baseDamage;
@@ -269,8 +229,7 @@ public class CharacterStats_SO : ScriptableObject
     #endregion
 
     #region SaveCharacterData
-    public void saveCharacterData()
-    {
+    public void saveCharacterData() {
         saveDataOnClose = true;
         EditorUtility.SetDirty(this);
     }

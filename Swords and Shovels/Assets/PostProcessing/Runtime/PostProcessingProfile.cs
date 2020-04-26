@@ -1,10 +1,8 @@
 using System;
 
-namespace UnityEngine.PostProcessing
-{
-    public class PostProcessingProfile : ScriptableObject
-    {
-        #pragma warning disable 0169 // "field x is never used"
+namespace UnityEngine.PostProcessing {
+    public class PostProcessingProfile : ScriptableObject {
+#pragma warning disable 0169 // "field x is never used"
 
         public BuiltinDebugViewsModel debugViews = new BuiltinDebugViewsModel();
         public FogModel fog = new FogModel();
@@ -25,8 +23,7 @@ namespace UnityEngine.PostProcessing
 #if UNITY_EDITOR
         // Monitor settings
         [Serializable]
-        public class MonitorSettings
-        {
+        public class MonitorSettings {
             // Callback used in the editor to grab the rendered frame and sent it to monitors
             public Action<RenderTexture> onFrameEndEditorOnly;
 
@@ -35,8 +32,7 @@ namespace UnityEngine.PostProcessing
             public bool refreshOnPlay = false;
 
             // Histogram
-            public enum HistogramMode
-            {
+            public enum HistogramMode {
                 Red = 0,
                 Green = 1,
                 Blue = 2,

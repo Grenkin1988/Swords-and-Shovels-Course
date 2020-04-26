@@ -1,29 +1,24 @@
 using UnityEngine;
 using UnityEngine.PostProcessing;
 
-namespace UnityEditor.PostProcessing
-{
+namespace UnityEditor.PostProcessing {
     using Settings = UserLutModel.Settings;
 
     [PostProcessingModelEditor(typeof(UserLutModel))]
-    public class UserLutModelEditor : PostProcessingModelEditor
-    {
-        SerializedProperty m_Texture;
-        SerializedProperty m_Contribution;
+    public class UserLutModelEditor : PostProcessingModelEditor {
+        private SerializedProperty m_Texture;
+        private SerializedProperty m_Contribution;
 
-        public override void OnEnable()
-        {
+        public override void OnEnable() {
             m_Texture = FindSetting((Settings x) => x.lut);
             m_Contribution = FindSetting((Settings x) => x.contribution);
         }
 
-        public override void OnInspectorGUI()
-        {
+        public override void OnInspectorGUI() {
             var lut = (target as UserLutModel).settings.lut;
 
             // Checks import settings on the lut, offers to fix them if invalid
-            if (lut != null)
-            {
+            if (lut != null) {
                 var importer = (TextureImporter)AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(lut));
 
                 if (importer != null) // Fails when using an internal texture
@@ -40,16 +35,13 @@ namespace UnityEditor.PostProcessing
                         && (importer.textureFormat == TextureImporterFormat.RGB24 || importer.textureFormat == TextureImporterFormat.AutomaticTruecolor);
 #endif
 
-                    if (!valid)
-                    {
+                    if (!valid) {
                         EditorGUILayout.HelpBox("Invalid LUT import settings.", MessageType.Warning);
 
                         GUILayout.Space(-32);
-                        using (new EditorGUILayout.HorizontalScope())
-                        {
+                        using (new EditorGUILayout.HorizontalScope()) {
                             GUILayout.FlexibleSpace();
-                            if (GUILayout.Button("Fix", GUILayout.Width(60)))
-                            {
+                            if (GUILayout.Button("Fix", GUILayout.Width(60))) {
                                 SetLUTImportSettings(importer);
                                 AssetDatabase.Refresh();
                             }
@@ -57,9 +49,7 @@ namespace UnityEditor.PostProcessing
                         }
                         GUILayout.Space(11);
                     }
-                }
-                else
-                {
+                } else {
                     m_Texture.objectReferenceValue = null;
                 }
             }
@@ -68,8 +58,7 @@ namespace UnityEditor.PostProcessing
             EditorGUILayout.PropertyField(m_Contribution);
         }
 
-        void SetLUTImportSettings(TextureImporter importer)
-        {
+        private void SetLUTImportSettings(TextureImporter importer) {
 #if UNITY_5_5_OR_NEWER
             importer.textureType = TextureImporterType.Default;
             importer.sRGBTexture = false;

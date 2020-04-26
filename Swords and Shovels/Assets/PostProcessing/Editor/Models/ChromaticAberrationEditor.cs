@@ -1,9 +1,7 @@
 using UnityEngine.PostProcessing;
 
-namespace UnityEditor.PostProcessing
-{
+namespace UnityEditor.PostProcessing {
     [PostProcessingModelEditor(typeof(ChromaticAberrationModel))]
-    public class ChromaticaAberrationModelEditor : DefaultPostFxModelEditor
-    {
+    public class ChromaticaAberrationModelEditor : DefaultPostFxModelEditor {
     }
 }

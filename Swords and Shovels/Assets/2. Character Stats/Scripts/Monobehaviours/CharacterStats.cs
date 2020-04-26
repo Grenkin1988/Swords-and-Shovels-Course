@@ -1,26 +1,19 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class CharacterStats : MonoBehaviour
-{
+public class CharacterStats : MonoBehaviour {
     public CharacterStats_SO characterDefinition;
     public CharacterInventory charInv;
     public GameObject characterWeaponSlot;
 
     #region Constructors
-    public CharacterStats()
-    {
+    public CharacterStats() {
         charInv = CharacterInventory.instance;
     }
     #endregion
 
     #region Initializations
-    void Start()
-    {
-        if (!characterDefinition.setManually)
-        {
+    private void Start() {
+        if (!characterDefinition.setManually) {
             characterDefinition.maxHealth = 100;
             characterDefinition.currentHealth = 50;
 
@@ -46,69 +39,58 @@ public class CharacterStats : MonoBehaviour
     #endregion
 
     #region SaveData
-    private void Update()
-    {
+    private void Update() {
         //This should be triggered by the game manager during a save point
-        if (Input.GetMouseButtonDown(2))
+        if (Input.GetMouseButtonDown(2)) {
             characterDefinition.saveCharacterData();
+        }
     }
     #endregion
 
     #region Stat Increasers
-    public void ApplyHealth(int healthAmount)
-    {
+    public void ApplyHealth(int healthAmount) {
         characterDefinition.ApplyHealth(healthAmount);
     }
 
-    public void ApplyMana(int manaAmount)
-    {
+    public void ApplyMana(int manaAmount) {
         characterDefinition.ApplyMana(manaAmount);
     }
 
-    public void GiveWealth(int wealthAmount)
-    {
+    public void GiveWealth(int wealthAmount) {
         characterDefinition.GiveWealth(wealthAmount);
     }
     #endregion
 
     #region Stat Reducers
-    public void TakeDamage(int amount)
-    {
+    public void TakeDamage(int amount) {
         characterDefinition.TakeDamage(amount);
     }
 
-    public void TakeMana(int amount)
-    {
+    public void TakeMana(int amount) {
         characterDefinition.TakeMana(amount);
     }
     #endregion
 
     #region Weapon and Armor Change
-    public void ChangeWeapon(ItemPickUp weaponPickUp)
-    {
-        if (!characterDefinition.UnEquipWeapon(weaponPickUp, charInv, characterWeaponSlot))
-        {
+    public void ChangeWeapon(ItemPickUp weaponPickUp) {
+        if (!characterDefinition.UnEquipWeapon(weaponPickUp, charInv, characterWeaponSlot)) {
             characterDefinition.EquipWeapon(weaponPickUp, charInv, characterWeaponSlot);
         }
     }
 
-    public void ChangeArmor(ItemPickUp armorPickUp)
-    {
-        if (!characterDefinition.UnEquipArmor(armorPickUp, charInv))
-        {
+    public void ChangeArmor(ItemPickUp armorPickUp) {
+        if (!characterDefinition.UnEquipArmor(armorPickUp, charInv)) {
             characterDefinition.EquipArmor(armorPickUp, charInv);
         }
     }
     #endregion
 
     #region Reporters
-    public int GetHealth()
-    {
+    public int GetHealth() {
         return characterDefinition.currentHealth;
     }
 
-    public ItemPickUp GetCurrentWeapon()
-    {
+    public ItemPickUp GetCurrentWeapon() {
         return characterDefinition.weapon;
     }
     #endregion

@@ -1,23 +1,18 @@
-using UnityEngine;
 using UnityEngine.PostProcessing;
 
-namespace UnityEditor.PostProcessing
-{
+namespace UnityEditor.PostProcessing {
     using Settings = ScreenSpaceReflectionModel.Settings;
 
     [PostProcessingModelEditor(typeof(ScreenSpaceReflectionModel))]
-    public class ScreenSpaceReflectionModelEditor : PostProcessingModelEditor
-    {
-        struct IntensitySettings
-        {
+    public class ScreenSpaceReflectionModelEditor : PostProcessingModelEditor {
+        private struct IntensitySettings {
             public SerializedProperty reflectionMultiplier;
             public SerializedProperty fadeDistance;
             public SerializedProperty fresnelFade;
             public SerializedProperty fresnelFadePower;
         }
 
-        struct ReflectionSettings
-        {
+        private struct ReflectionSettings {
             public SerializedProperty blendType;
             public SerializedProperty reflectionQuality;
             public SerializedProperty maxDistance;
@@ -28,27 +23,23 @@ namespace UnityEditor.PostProcessing
             public SerializedProperty reflectBackfaces;
         }
 
-        struct ScreenEdgeMask
-        {
+        private struct ScreenEdgeMask {
             public SerializedProperty intensity;
         }
 
-        IntensitySettings m_Intensity;
-        ReflectionSettings m_Reflection;
-        ScreenEdgeMask m_ScreenEdgeMask;
+        private IntensitySettings m_Intensity;
+        private ReflectionSettings m_Reflection;
+        private ScreenEdgeMask m_ScreenEdgeMask;
 
-        public override void OnEnable()
-        {
-            m_Intensity = new IntensitySettings
-            {
+        public override void OnEnable() {
+            m_Intensity = new IntensitySettings {
                 reflectionMultiplier = FindSetting((Settings x) => x.intensity.reflectionMultiplier),
                 fadeDistance = FindSetting((Settings x) => x.intensity.fadeDistance),
                 fresnelFade = FindSetting((Settings x) => x.intensity.fresnelFade),
                 fresnelFadePower = FindSetting((Settings x) => x.intensity.fresnelFadePower)
             };
 
-            m_Reflection = new ReflectionSettings
-            {
+            m_Reflection = new ReflectionSettings {
                 blendType = FindSetting((Settings x) => x.reflection.blendType),
                 reflectionQuality = FindSetting((Settings x) => x.reflection.reflectionQuality),
                 maxDistance = FindSetting((Settings x) => x.reflection.maxDistance),
@@ -59,14 +50,12 @@ namespace UnityEditor.PostProcessing
                 reflectBackfaces = FindSetting((Settings x) => x.reflection.reflectBackfaces)
             };
 
-            m_ScreenEdgeMask = new ScreenEdgeMask
-            {
+            m_ScreenEdgeMask = new ScreenEdgeMask {
                 intensity = FindSetting((Settings x) => x.screenEdgeMask.intensity)
             };
         }
 
-        public override void OnInspectorGUI()
-        {
+        public override void OnInspectorGUI() {
             EditorGUILayout.HelpBox("This effect only works with the deferred rendering path.", MessageType.Info);
 
             EditorGUILayout.LabelField("Reflection", EditorStyles.boldLabel);

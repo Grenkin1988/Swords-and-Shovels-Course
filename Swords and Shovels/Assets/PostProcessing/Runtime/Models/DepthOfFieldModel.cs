@@ -1,12 +1,9 @@
 using System;
 
-namespace UnityEngine.PostProcessing
-{
+namespace UnityEngine.PostProcessing {
     [Serializable]
-    public class DepthOfFieldModel : PostProcessingModel
-    {
-        public enum KernelSize
-        {
+    public class DepthOfFieldModel : PostProcessingModel {
+        public enum KernelSize {
             Small,
             Medium,
             Large,
@@ -14,8 +11,7 @@ namespace UnityEngine.PostProcessing
         }
 
         [Serializable]
-        public struct Settings
-        {
+        public struct Settings {
             [Min(0.1f), Tooltip("Distance to the point of focus.")]
             public float focusDistance;
 
@@ -31,12 +27,9 @@ namespace UnityEngine.PostProcessing
             [Tooltip("Convolution kernel size of the bokeh filter, which determines the maximum radius of bokeh. It also affects the performance (the larger the kernel is, the longer the GPU time is required).")]
             public KernelSize kernelSize;
 
-            public static Settings defaultSettings
-            {
-                get
-                {
-                    return new Settings
-                    {
+            public static Settings defaultSettings {
+                get {
+                    return new Settings {
                         focusDistance = 10f,
                         aperture = 5.6f,
                         focalLength = 50f,
@@ -48,15 +41,13 @@ namespace UnityEngine.PostProcessing
         }
 
         [SerializeField]
-        Settings m_Settings = Settings.defaultSettings;
-        public Settings settings
-        {
+        private Settings m_Settings = Settings.defaultSettings;
+        public Settings settings {
             get { return m_Settings; }
             set { m_Settings = value; }
         }
 
-        public override void Reset()
-        {
+        public override void Reset() {
             m_Settings = Settings.defaultSettings;
         }
     }
