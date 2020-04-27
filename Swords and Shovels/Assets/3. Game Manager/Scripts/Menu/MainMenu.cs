@@ -18,7 +18,6 @@ public class MainMenu : MonoBehaviour {
         }
     }
 
-
     public void OnFadeOutComplete() {
         Debug.Log(nameof(OnFadeOutComplete));
     }

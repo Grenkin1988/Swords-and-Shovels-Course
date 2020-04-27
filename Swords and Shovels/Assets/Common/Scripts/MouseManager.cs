@@ -10,7 +10,21 @@ public class MouseManager : MonoBehaviour {
 
     public EventVector3 OnClickEnvironment;
 
+    private bool _useDefaultCursor = false;
+
+    private void Start() {
+        GameManager.Instance.OnGameStateChanged.AddListener(HandleGameStateChanged);
+    }
+
+    private void HandleGameStateChanged(GameState current, GameState previous) {
+        _useDefaultCursor = current == GameState.PAUSED;
+    }
+
     private void Update() {
+        if (_useDefaultCursor) {
+            Cursor.SetCursor(pointer, Vector2.zero, CursorMode.Auto);
+            return;
+        }
         // Raycast into scene
         if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out var hit, 50, clickableLayer.value)) {
             bool door = false;
