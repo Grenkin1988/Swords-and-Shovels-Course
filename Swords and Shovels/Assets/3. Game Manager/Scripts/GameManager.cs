@@ -1,16 +1,33 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
+public enum GameState {
+    PREGAME,
+    RUNNING,
+    PAUSED
+}
+
+[Serializable]
+public class EventGameState : UnityEvent<GameState, GameState> { }
+
 public class GameManager : Singleton<GameManager> {
+    
+
     // keep track of the game state
-    // ganerate other persistent systems
     [SerializeField]
     private GameObject[] _systemPrefabs;
+
     private List<GameObject> _instancedSystems;
+    private List<AsyncOperation> _loadOperations;
+
     private string _currentLevelName = string.Empty;
 
-    private List<AsyncOperation> _loadOperations;
+    public EventGameState OnGameStateChanged;
+
+    public GameState CurrentGameState { get; private set; }
 
     private void Start() {
         DontDestroyOnLoad(gameObject);
@@ -19,8 +36,6 @@ public class GameManager : Singleton<GameManager> {
         _loadOperations = new List<AsyncOperation>();
 
         InstantiateSystemPrefabs();
-
-        LoadLevel("Main");
     }
 
     private void InstantiateSystemPrefabs() {
@@ -44,6 +59,10 @@ public class GameManager : Singleton<GameManager> {
     private void OnLoadOperationComplete(AsyncOperation ao) {
         if (_loadOperations.Contains(ao)) {
             _loadOperations.Remove(ao);
+
+            if (_loadOperations.Count == 0) { 
+                UpdateState(GameState.RUNNING); 
+            }
         }
         Debug.Log("Load Completed.");
     }
@@ -67,5 +86,27 @@ public class GameManager : Singleton<GameManager> {
             Destroy(_instancedSystems[i]);
         }
         _instancedSystems.Clear();
+    }
+
+    private void UpdateState(GameState state) {
+        var previousGameState = CurrentGameState;
+        CurrentGameState = state;
+
+        switch (CurrentGameState) {
+            case GameState.PREGAME:
+                break;
+            case GameState.RUNNING:
+                break;
+            case GameState.PAUSED:
+                break;
+            default:
+                break;
+        }
+
+        OnGameStateChanged?.Invoke(CurrentGameState, previousGameState);
+    }
+
+    public void StartGame() {
+        LoadLevel("Main");
     }
 }

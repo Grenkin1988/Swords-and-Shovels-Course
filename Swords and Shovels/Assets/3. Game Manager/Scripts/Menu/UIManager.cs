@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 public class UIManager : Singleton<UIManager> {
     [SerializeField]
@@ -6,13 +7,13 @@ public class UIManager : Singleton<UIManager> {
     [SerializeField]
     private Camera _dummyCamera;
 
-    private void Start() {
-
-    }
-
     private void Update() {
+        if(GameManager.Instance.CurrentGameState != GameState.PREGAME) {
+            return;
+        }
+
         if (Input.GetKeyDown(KeyCode.Space)) {
-            _mainMenu.FadeOut();
+            GameManager.Instance.StartGame();
         }
     }
 

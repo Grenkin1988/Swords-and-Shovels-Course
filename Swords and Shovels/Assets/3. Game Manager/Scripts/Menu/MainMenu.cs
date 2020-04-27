@@ -8,6 +8,17 @@ public class MainMenu : MonoBehaviour {
     [SerializeField]
     private AnimationClip _fadeInAnimation;
 
+    private void Start() {
+        GameManager.Instance.OnGameStateChanged.AddListener(HandleGameStateChanged);
+    }
+
+    private void HandleGameStateChanged(GameState current, GameState previous) {
+        if(previous == GameState.PREGAME && current == GameState.RUNNING) {
+            FadeOut();
+        }
+    }
+
+
     public void OnFadeOutComplete() {
         Debug.Log(nameof(OnFadeOutComplete));
     }
