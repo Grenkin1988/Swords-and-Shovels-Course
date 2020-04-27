@@ -9,8 +9,15 @@ public class UIManager : Singleton<UIManager> {
     [SerializeField]
     private Camera _dummyCamera;
 
+    public Events.EventFadeComplete OnMainMenuFadeComplete;
+
     private void Start() {
+        _mainMenu.OnMainMenuFadeComplete.AddListener(HandleMainMenuFadeComplete);
         GameManager.Instance.OnGameStateChanged.AddListener(HandleGameStateChanged);
+    }
+
+    private void HandleMainMenuFadeComplete(bool fadeOut) {
+        OnMainMenuFadeComplete?.Invoke(fadeOut);
     }
 
     private void HandleGameStateChanged(GameState current, GameState previous) {

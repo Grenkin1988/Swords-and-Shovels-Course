@@ -10,9 +10,6 @@ public enum GameState {
     PAUSED
 }
 
-[Serializable]
-public class EventGameState : UnityEvent<GameState, GameState> { }
-
 public class GameManager : Singleton<GameManager> {
     
 
@@ -25,7 +22,7 @@ public class GameManager : Singleton<GameManager> {
 
     private string _currentLevelName = string.Empty;
 
-    public EventGameState OnGameStateChanged;
+    public Events.EventGameState OnGameStateChanged;
 
     public GameState CurrentGameState { get; private set; }
 
@@ -36,6 +33,14 @@ public class GameManager : Singleton<GameManager> {
         _loadOperations = new List<AsyncOperation>();
 
         InstantiateSystemPrefabs();
+
+        UIManager.Instance.OnMainMenuFadeComplete.AddListener(HandleMainMenuFadeComplete);
+    }
+
+    private void HandleMainMenuFadeComplete(bool fadeOut) {
+        if (!fadeOut) {
+            UnloadLevel(_currentLevelName);
+        }
     }
 
     private void Update() {
@@ -129,5 +134,13 @@ public class GameManager : Singleton<GameManager> {
             ? GameState.PAUSED 
             : GameState.RUNNING;
         UpdateState(newState);
+    }
+
+    public void RestartGame() {
+        UpdateState(GameState.PREGAME);
+    }
+
+    public void QuitGame() {
+        Application.Quit();
     }
 }
